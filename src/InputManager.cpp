@@ -50,7 +50,6 @@ namespace Core{
 			}
 		};
 
-		printf("key (%d, %d\n", action, key);
 		for(auto id : mapCallbackDelegate[w]->m_vecInputDelegates){
 			if(f(id, scancode))
 				break;

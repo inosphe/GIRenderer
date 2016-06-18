@@ -28,6 +28,13 @@ public:
 	virtual void Update(int ms);
 
 	void SetPosition(const glm::vec3& pos);
+	inline glm::vec3 GetPosition(){return m_vPosition;}
+	inline void SetPositionElement(int i, float v){m_vPosition[i]=v;}
+
+	glm::vec3 GetEuler();
+	void SetEuler(glm::vec3& rot);
+	void SetEulerElement(int i, float v);
+
 	void SetDirection(const glm::vec3& dir);
 	glm::mat4x4 GetTransform();
 

@@ -36,6 +36,7 @@ namespace Core{
 
 	void SceneManager::Update(int ms) {
 		m_pScene->Update(ms);
+		m_pWindow0->Update();
 	}
 
 	void SceneManager::Render(Render::RenderingParameters &rp) {
