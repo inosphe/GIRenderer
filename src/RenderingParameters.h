@@ -17,6 +17,7 @@ namespace Render{
 		RenderingParameters(GLuint uProgram);
 
 		void Init();
+		void Clear();
 		void SetObjectTransform(const glm::mat4x4& matTransform);
 
 		void BindCamera(Camera* pCamera);

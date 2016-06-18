@@ -25,6 +25,10 @@ namespace Render{
 		m_uTextureLocation = glGetUniformLocation(m_uProgram, "Tex0");
 	}
 
+	void RenderingParameters::Clear() {
+
+	}
+
 	void RenderingParameters::SetObjectTransform(const glm::mat4x4 &matTransform) {
 		glUniformMatrix4fv(m_uTransformLocation, 1, GL_FALSE, glm::value_ptr(matTransform));
 //		assert(glGetError() == GL_NO_ERROR);
@@ -32,10 +36,14 @@ namespace Render{
 
 	void RenderingParameters::BindCamera(Camera *pCamera) {
 		// set the uniform
+		GLUtil::CheckError();
 		glUniformMatrix4fv(m_uViewProjLocation, 1, GL_FALSE, value_ptr(pCamera->GetViewProj()));
+		GLUtil::CheckError();
 		auto dir = pCamera->Dir();
 		dir = glm::normalize(dir);
 		glUniform3fv(m_uLookLocation, 1, value_ptr(dir));
+
+		GLUtil::CheckError();
 		assert(glGetError() == GL_NO_ERROR);
 	}
 

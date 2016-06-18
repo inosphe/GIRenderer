@@ -6,20 +6,28 @@
 #define PROJECT_IRENDERINGSTRATEGY_H
 
 #include <GLFW/glfw3.h>
+#include "common_header.h"
 
-class IRenderingStrategy {
-public:
-	IRenderingStrategy(GLuint uProgram);
-	virtual ~IRenderingStrategy();
+namespace Render{
+	class RenderingParameters;
 
-	virtual void Init(){}
-	virtual void Clear(){}
+	class IRenderingStrategy {
+	public:
+		IRenderingStrategy();
+		virtual ~IRenderingStrategy();
 
-	virtual void RenderBegin() = 0;
-	virtual void RenderEnd() = 0;
+		virtual void Init();
+		virtual void Clear();
 
-protected:
-	const GLuint m_uProgram;
+		virtual void RenderBegin();
+		virtual void RenderEnd();
+
+		RenderingParameters& GetShader(){return *m_pParameters;}
+
+	protected:
+		GLuint m_uProgram = 0;
+		RenderingParameters* m_pParameters = nullptr;
+	};
 };
 
 

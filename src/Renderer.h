@@ -29,11 +29,8 @@ namespace Render {
 		void InitRenderingStrategy(C... args){
 			assert(!m_pRenderingStrategy);
 
-			m_pRenderingStrategy = new T(m_uProgram, args...);
+			m_pRenderingStrategy = new T(args...);
 			m_pRenderingStrategy->Init();
-
-			m_pParameters = new RenderingParameters(m_uProgram);
-			m_pParameters->Init();
 		};
 
 		void RenderBegin();
@@ -42,11 +39,8 @@ namespace Render {
 		void SetCamera(std::shared_ptr<Render::Camera> pCamera);
 		std::shared_ptr<Render::Camera> GetTargetCamera(){return m_pCamera;}
 		Render::Camera* GetTargetCameraRaw(){return m_pCamera.get();}
-		inline RenderingParameters& GetRenderingParameters(){return *m_pParameters;}
-
-		GLuint m_uProgram = 0;
+		inline RenderingParameters& GetRenderingParameters(){return m_pRenderingStrategy->GetShader();}
 	private:
-		RenderingParameters* m_pParameters = nullptr;
 		IRenderingStrategy* m_pRenderingStrategy = nullptr;
 		std::shared_ptr<Render::Camera> m_pCamera = nullptr;
 

@@ -9,20 +9,21 @@
 #include "IRenderingStrategy.h"
 #include <GLFW/glfw3.h>
 
-class ForwardRenderingStrategy : public IRenderingStrategy{
-public:
-	ForwardRenderingStrategy(GLuint uProgram);
-	virtual ~ForwardRenderingStrategy();
+namespace Render{
+	class ForwardRenderingStrategy : public IRenderingStrategy{
+	public:
+		ForwardRenderingStrategy();
+		virtual ~ForwardRenderingStrategy();
 
-	void Init() override;
-	void Clear() override;
+		void Init() override;
+		void Clear() override;
 
-	virtual void RenderEnd() override;
+		virtual void RenderEnd() override;
 
-	virtual void RenderBegin() override;
+		virtual void RenderBegin() override;
 
-private:
-};
-
+	private:
+	};
+}
 
 #endif //PROJECT_FORWARDRENDERINGSTRATEGY_H

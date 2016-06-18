@@ -39,7 +39,6 @@ void ObjectPropertyWindow::Init() {
 	layout->appendRow(0);
 	layout->setAnchor(pCombobox, AdvancedGridLayout::Anchor(1, layout->rowCount()-1, 3, 1));
 	pCombobox->setChangeCallback([](bool b){
-		Logger::Debug("on click");
 	});
 	pCombobox->setCallback([this](int i){
 		SetObject((*m_pObjects)[i]);

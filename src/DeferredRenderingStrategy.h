@@ -7,12 +7,12 @@
 
 #include "IRenderingStrategy.h"
 
-class DeferredRenderingStrategy : public IRenderingStrategy{
-public:
-	DeferredRenderingStrategy();
-	virtual ~DeferredRenderingStrategy();
-
-};
-
+namespace Render{
+	class DeferredRenderingStrategy : public IRenderingStrategy{
+	public:
+		DeferredRenderingStrategy();
+		virtual ~DeferredRenderingStrategy();
+	};
+}
 
 #endif //PROJECT_DEFERREDRENDERINGSTRATEGY_H

@@ -39,7 +39,7 @@ namespace Core {
 
 		m_pRenderer = new Render::Renderer();
 		m_pRenderer->Init();
-		m_pRenderer->InitRenderingStrategy<ForwardRenderingStrategy>();
+		m_pRenderer->InitRenderingStrategy<Render::ForwardRenderingStrategy>();
 
 		glFrontFace(GL_CW);
 //		glCullFace(GL_;
@@ -109,6 +109,9 @@ namespace Core {
 		m_pRenderer->RenderBegin();
 		m_pSceneManager->Render(m_pRenderer->GetRenderingParameters());
 		m_pRenderer->RenderEnd();
+
+
+
 		if(m_state.bRenderGUI)
 			m_pGUI->Render();
 

@@ -6,39 +6,46 @@
 #include "util/GLUtil.h"
 #include "Exception.h"
 #include <cassert>
+#include "RenderingParameters.h"
 
-ForwardRenderingStrategy::ForwardRenderingStrategy(GLuint uProgram)
-:IRenderingStrategy(uProgram)
-{
+namespace Render{
+	ForwardRenderingStrategy::ForwardRenderingStrategy()
+	:IRenderingStrategy()
+	{
 
-}
-
-ForwardRenderingStrategy::~ForwardRenderingStrategy() {
-
-}
-
-void ForwardRenderingStrategy::Init() {
-	IRenderingStrategy::Init();
-
-	try{
-		glAttachShader(m_uProgram, GLUtil::LoadShader(GL_VERTEX_SHADER, "shader/textured.vert.glsl"));
-		glAttachShader(m_uProgram, GLUtil::LoadShader(GL_FRAGMENT_SHADER, "shader/textured.frag.glsl"));
-		glLinkProgram(m_uProgram);
 	}
-	catch(const Core::Exception& ex){
-		assert(false);
+
+	ForwardRenderingStrategy::~ForwardRenderingStrategy() {
+
 	}
-}
 
-void ForwardRenderingStrategy::Clear() {
-	IRenderingStrategy::Clear();
+	void ForwardRenderingStrategy::Init() {
+		IRenderingStrategy::Init();
 
-}
+		try{
+			glAttachShader(m_uProgram, GLUtil::LoadShader(GL_VERTEX_SHADER, "shader/textured.vert.glsl"));
+			glAttachShader(m_uProgram, GLUtil::LoadShader(GL_FRAGMENT_SHADER, "shader/textured.frag.glsl"));
+			glLinkProgram(m_uProgram);
 
-void ForwardRenderingStrategy::RenderBegin() {
-	glDisable(GL_BLEND);
-}
+			m_pParameters = new RenderingParameters(m_uProgram);
+			m_pParameters->Init();
+		}
+		catch(const Core::Exception& ex){
+			assert(false);
+		}
+	}
 
-void ForwardRenderingStrategy::RenderEnd() {
+	void ForwardRenderingStrategy::Clear() {
+		IRenderingStrategy::Clear();
 
+	}
+
+	void ForwardRenderingStrategy::RenderBegin() {
+		IRenderingStrategy::RenderBegin();
+		glDisable(GL_BLEND);
+	}
+
+	void ForwardRenderingStrategy::RenderEnd() {
+		IRenderingStrategy::RenderEnd();
+	}
 }

@@ -20,19 +20,21 @@ namespace Render {
 	}
 
 	void Renderer::Init() {
-		m_uProgram = glCreateProgram();
+
 	}
 
 	void Renderer::Clear() {
-		glDeleteProgram(m_uProgram);
+		if(m_pRenderingStrategy){
+			m_pRenderingStrategy->Clear();
+		}
 	}
 
 	void Renderer::RenderBegin() {
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glUseProgram(m_uProgram);
 		m_pRenderingStrategy->RenderBegin();
-		m_pParameters->BindCamera(GetTargetCameraRaw());
+		auto shader = m_pRenderingStrategy->GetShader();
+		shader.BindCamera(GetTargetCameraRaw());
 	}
 
 	void Renderer::RenderEnd() {
