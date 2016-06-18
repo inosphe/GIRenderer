@@ -9,3 +9,15 @@ IScene::IScene(Core::Application& app)
 {
 
 }
+
+void IScene::Update(int ms) {
+	for(auto obj: GetObjects()){
+		obj->Update(ms);
+	}
+}
+
+void IScene::Render(Render::RenderingParameters &rp) {
+	for(auto model: GetObjects()){
+		model->Render(rp);
+	}
+}

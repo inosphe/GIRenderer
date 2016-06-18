@@ -14,7 +14,8 @@ void TestScene3::Init() {
 	auto resources = m_app.GetResourceManager().LoadFBXFromConfig("resources.txt");
 
 	for(auto scene : resources){
-		models.push_back(std::shared_ptr<Render::IModel>(new Render::FBXModel(scene, m_app.GetResourceManager())));
+		auto model = new Render::FBXModel(scene, m_app.GetResourceManager());
+		m_gameObjects.push_back(std::shared_ptr<GameObject>(new GameObject(model)));
 	}
 
 	m_pMainCamera = std::shared_ptr<Render::Camera>(new Render::Camera());
@@ -30,15 +31,4 @@ TestScene3::TestScene3(Core::Application &app)
 :IScene(app)
 {
 
-}
-
-void TestScene3::Render(Render::RenderingParameters &rp) {
-	models[0]->Render(rp);
-}
-
-void TestScene3::Update(int ms) {
-//	models[0]->Update(ms);
-	models[0]->UpdateForRender();
-
-	m_pMainCamera->Update(ms);
 }

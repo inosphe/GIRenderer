@@ -19,13 +19,11 @@
 #include "Logger.h"
 #include <OPENGL/glu.h>
 #include "IMovableObject.h"
-#include "TestScene.h"
-#include "TestScene2.h"
-#include "TestScene3.h"
 #include "util/GLUtil.h"
 #include "Camera.h"
 #include "Timer.h"
 #include "GUI.h"
+#include "SceneManager.h"
 #include <InputManager.h>
 
 namespace Core {
@@ -57,9 +55,6 @@ namespace Core {
 		m_pRenderer->Init();
 		m_pRenderer->InitRenderingStrategy<ForwardRenderingStrategy>();
 
-		m_pScene = new TestScene3(*this);
-		m_pScene->Init();
-
 		glFrontFace(GL_CW);
 //		glCullFace(GL_;
 //		glDisable(GL_CULL_FACE);
@@ -74,6 +69,8 @@ namespace Core {
 		m_pInputManager->Init(m_pWindow);
 		m_pInputManager->AddDelegate(m_pGUI);
 
+		m_pSceneManager = new SceneManager(this);
+		m_pSceneManager->Create();
 		return true;
 	}
 
@@ -85,6 +82,9 @@ namespace Core {
 	}
 
 	void Application::Clear() {
+		m_pSceneManager->Destroy();
+		SAFE_DELETE(m_pSceneManager);
+
 		m_pResourceManager->Clear();
 		SAFE_DELETE(m_pResourceManager);
 		SAFE_DELETE(m_pTimer);
@@ -102,7 +102,7 @@ namespace Core {
 
 	void Application::Update() {
 		m_pTimer->Update();
-		m_pScene->Update(m_pTimer->GetDelta());
+		m_pSceneManager->Update(m_pTimer->GetDelta());
 
 		GLUtil::CheckError();
 
@@ -120,7 +120,7 @@ namespace Core {
 
 	void Application::Render() {
 		m_pRenderer->RenderBegin();
-		m_pScene->Render(m_pRenderer->GetRenderingParameters());
+		m_pSceneManager->Render(m_pRenderer->GetRenderingParameters());
 		m_pRenderer->RenderEnd();
 		if(m_state.bRenderGUI)
 			m_pGUI->Render();

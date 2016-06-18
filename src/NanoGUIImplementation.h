@@ -19,7 +19,6 @@ public:
 
 protected:
 	void InitLayout();
-	void InitLayout2();
 	void InitCallbacks(GLFWwindow* pWindow);
 
 private:

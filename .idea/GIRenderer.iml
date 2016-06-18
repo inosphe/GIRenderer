@@ -121,6 +121,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/fbxtest.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ForwardRenderingStrategy.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ForwardRenderingStrategy.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/GameObject.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/GameObject.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/GUI.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/GUI.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Image.cpp" isTestSource="false" />
@@ -153,12 +155,16 @@
       <sourceFolder url="file://$MODULE_DIR$/src/MaterialElement.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/NanoGUIImplementation.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/NanoGUIImplementation.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ObjectPropertyWindow.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ObjectPropertyWindow.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Renderer.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Renderer.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/RenderingParameters.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/RenderingParameters.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ResourceManager.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ResourceManager.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/SceneManager.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/SceneManager.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/TestScene.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/TestScene.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/TestScene2.cpp" isTestSource="false" />
@@ -364,7 +370,7 @@
           <root url="file:///Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/WebKit.framework/Headers" />
           <root url="file:///Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include" />
           <root url="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
-          <root url="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.0.2/include" />
+          <root url="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include" />
           <root url="file://$MODULE_DIR$/lib/external/glew/include" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/deps" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/include" />
@@ -558,7 +564,7 @@
           <root url="file:///Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/WebKit.framework/Headers" />
           <root url="file:///Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include" />
           <root url="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
-          <root url="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.0.2/include" />
+          <root url="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include" />
           <root url="file://$MODULE_DIR$/lib/external/glew/include" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/deps" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/include" />
@@ -587,7 +593,6 @@
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/window.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/input.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/nsgl_context.m" />
-          <root url="file://$MODULE_DIR$/lib/external/glfw/src/nsgl_context.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/posix_tls.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/posix_tls.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_init.m" />
@@ -597,6 +602,7 @@
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_joystick.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/init.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_time.c" />
+          <root url="file://$MODULE_DIR$/lib/external/glfw/src/nsgl_context.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_platform.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/context.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/glfw3Config.cmake.in" />
@@ -641,20 +647,24 @@
           <root url="file://$MODULE_DIR$/src/Camera.h" />
           <root url="file://$MODULE_DIR$/src/Logger.cpp" />
           <root url="file://$MODULE_DIR$/src/DeferredRenderingStrategy.cpp" />
-          <root url="file://$MODULE_DIR$/src/DummyModel2.h" />
-          <root url="file://$MODULE_DIR$/src/Texture.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXLoader.h" />
+          <root url="file://$MODULE_DIR$/src/Texture.cpp" />
+          <root url="file://$MODULE_DIR$/src/Logger.h" />
           <root url="file://$MODULE_DIR$/src/IRenderable.h" />
           <root url="file://$MODULE_DIR$/src/FBXModel.h" />
           <root url="file://$MODULE_DIR$/src/FBXModel.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXScene.h" />
+          <root url="file://$MODULE_DIR$/src/FBXMesh.h" />
+          <root url="file://$MODULE_DIR$/src/DummyModel2.h" />
           <root url="file://$MODULE_DIR$/src/Vertex.cpp" />
           <root url="file://$MODULE_DIR$/src/util/GLUtil.h" />
           <root url="file://$MODULE_DIR$/src/Renderer.cpp" />
           <root url="file://$MODULE_DIR$/src/Material.h" />
+          <root url="file://$MODULE_DIR$/src/ObjectPropertyWindow.h" />
           <root url="file://$MODULE_DIR$/src/IModel.cpp" />
           <root url="file://$MODULE_DIR$/src/Material.cpp" />
           <root url="file://$MODULE_DIR$/src/IRenderingStrategy.h" />
+          <root url="file://$MODULE_DIR$/src/ObjectPropertyWindow.cpp" />
           <root url="file://$MODULE_DIR$/src/AppState.h" />
           <root url="file://$MODULE_DIR$/src/FBXMaterial.h" />
           <root url="file://$MODULE_DIR$/src/Camera.cpp" />
@@ -676,10 +686,11 @@
           <root url="file://$MODULE_DIR$/src/GUI.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXLoader.cpp" />
           <root url="file://$MODULE_DIR$/src/TestScene3.cpp" />
-          <root url="file://$MODULE_DIR$/src/FBXMesh.h" />
+          <root url="file://$MODULE_DIR$/src/NanoGUIImplementation.cpp" />
           <root url="file://$MODULE_DIR$/src/IResource.h" />
           <root url="file://$MODULE_DIR$/src/InputManager.h" />
           <root url="file://$MODULE_DIR$/src/IMesh.h" />
+          <root url="file://$MODULE_DIR$/src/GameObject.h" />
           <root url="file://$MODULE_DIR$/src/IRenderable.cpp" />
           <root url="file://$MODULE_DIR$/src/MaterialElement.cpp" />
           <root url="file://$MODULE_DIR$/src/Image.h" />
@@ -687,11 +698,11 @@
           <root url="file://$MODULE_DIR$/src/MaterialElement.h" />
           <root url="file://$MODULE_DIR$/src/IModel.h" />
           <root url="file://$MODULE_DIR$/src/InputDelegate.cpp" />
-          <root url="file://$MODULE_DIR$/src/NanoGUIImplementation.cpp" />
           <root url="file://$MODULE_DIR$/src/IScene.h" />
           <root url="file://$MODULE_DIR$/src/util/FBXUtil.h" />
           <root url="file://$MODULE_DIR$/src/ResourceManager.h" />
           <root url="file://$MODULE_DIR$/src/ResourceManager.cpp" />
+          <root url="file://$MODULE_DIR$/src/GameObject.cpp" />
           <root url="file://$MODULE_DIR$/src/DummyModel2.cpp" />
           <root url="file://$MODULE_DIR$/src/fbxtest.cpp" />
           <root url="file://$MODULE_DIR$/src/Renderer.h" />
@@ -701,16 +712,17 @@
           <root url="file://$MODULE_DIR$/src/InputDelegate.h" />
           <root url="file://$MODULE_DIR$/src/TestScene2.h" />
           <root url="file://$MODULE_DIR$/src/Image.cpp" />
-          <root url="file://$MODULE_DIR$/src/Application.h" />
           <root url="file://$MODULE_DIR$/src/IMovableObject.h" />
+          <root url="file://$MODULE_DIR$/src/Application.h" />
+          <root url="file://$MODULE_DIR$/src/SceneManager.cpp" />
           <root url="file://$MODULE_DIR$/src/InputManager.cpp" />
           <root url="file://$MODULE_DIR$/src/IMesh.cpp" />
           <root url="file://$MODULE_DIR$/src/AppState.cpp" />
           <root url="file://$MODULE_DIR$/src/util/GLUtil.cpp" />
           <root url="file://$MODULE_DIR$/src/ForwardRenderingStrategy.cpp" />
           <root url="file://$MODULE_DIR$/src/TestScene3.h" />
+          <root url="file://$MODULE_DIR$/src/SceneManager.h" />
           <root url="file://$MODULE_DIR$/src/Timer.cpp" />
-          <root url="file://$MODULE_DIR$/src/Logger.h" />
           <root url="file://$MODULE_DIR$/src/IResourceLoader.h" />
           <root url="file://$MODULE_DIR$/src/IResource.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXMesh.cpp" />

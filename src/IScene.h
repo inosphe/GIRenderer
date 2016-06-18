@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "Application.h"
-
+#include "GameObject.h"
 
 namespace Render{
 	class Camera;
@@ -18,14 +18,19 @@ class IScene {
 public:
 	IScene(Core::Application& app);
 	virtual void Init(){}
-	virtual void Update(int ms) = 0;
-	virtual void Render(Render::RenderingParameters& rp) = 0;
+	virtual void Update(int ms);
+	virtual void Render(Render::RenderingParameters& rp);
+
+	typedef std::vector<std::shared_ptr<GameObject>> container;
 
 	inline std::shared_ptr<Render::Camera> GetMainCamera(){return m_pMainCamera;}
+	inline container& GetObjects(){return m_gameObjects;}
 
 protected:
 	std::shared_ptr<Render::Camera> m_pMainCamera = nullptr;
 	Core::Application& m_app;
+	std::vector<std::shared_ptr<GameObject>> m_gameObjects;
+
 };
 
 

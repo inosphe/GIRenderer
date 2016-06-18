@@ -29,7 +29,6 @@ void NanoGUIImplementation::Init(GLFWwindow* pWindow) {
 	initialize(pWindow, true);
 	InitCallbacks(pWindow);
 //	InitLayout();
-	InitLayout2();
 }
 
 void NanoGUIImplementation::InitLayout() {
@@ -305,38 +304,3 @@ enum test_enum {
 	Item2,
 	Item3
 };
-
-void NanoGUIImplementation::InitLayout2() {
-	FormHelper *gui = new FormHelper(this);
-	ref<Window> window = gui->addWindow(Eigen::Vector2i(0, 0), "Form helper example");
-	window->setWidth(200);
-
-	gui->addGroup("Basic types");
-	bool b = true;
-	gui->addVariable("bool", b);
-	string str = "test";
-	gui->addVariable("string", str);
-
-	gui->addGroup("Validating fields");
-	static int i = 1;
-	gui->addVariable("int", i);
-	static float f = 2.3f;
-	gui->addVariable("float", f);
-	static double d = 4.9;
-	gui->addVariable("double", d);
-
-	gui->addGroup("Complex types");
-	static test_enum e = Item1;
-	gui->addVariable("Enumeration", e, true)
-			->setItems({"Item 1", "Item 2", "Item 3"});
-
-	static nanogui::Color c(0.7f, 0.2f, 0.5f, 1.0f);
-	gui->addVariable("Color", c);
-
-	gui->addGroup("Other widgets");
-	gui->addButton("A button", [](){ std::cout << "Button pressed." << std::endl; });
-
-	this->setVisible(true);
-	this->performLayout();
-//	window->center();
-}

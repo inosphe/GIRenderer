@@ -19,8 +19,6 @@ public:
 	TestScene3(Core::Application& app);
 	virtual ~TestScene3();
 	void Init() override;
-	void Update(int ms) override;
-	void Render(Render::RenderingParameters& rp) override;
 
 	std::vector<std::shared_ptr<Render::IModel>> models;
 };

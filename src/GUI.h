@@ -11,6 +11,7 @@
 
 class NanoGUIImplementation;
 class GLFWwindow;
+class ObjectPropertyWindow;
 
 class GUI : public Core::InputDelegate{
 public:
@@ -27,6 +28,8 @@ public:
 	virtual bool OnKeyRepeat(int key, int scancode, int mods);
 	virtual bool OnKeyRelease(int key, int scancode, int mods);
 	virtual bool OnScroll(double x, double y);
+
+	ObjectPropertyWindow* MakeObjectPropertyWindow();
 
 private:
 	GLFWwindow* m_pWindow = nullptr;

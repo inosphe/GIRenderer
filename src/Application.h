@@ -28,6 +28,7 @@ class GUI;
 namespace Core {
 	class Timer;
 	class InputManager;
+	class SceneManager;
 
 	class Application {
 	public:
@@ -46,6 +47,7 @@ namespace Core {
 		inline Resource::ResourceManager& GetResourceManager(){return *m_pResourceManager;}
 
 		void SetCamera(std::shared_ptr<Render::Camera> pCamera);
+		GUI& GetGUI(){return *m_pGUI;}
 
 	private:
 		bool InitResourceManager();
@@ -55,7 +57,7 @@ namespace Core {
 		GLFWwindow* m_pWindow = nullptr;
 		Resource::ResourceManager* m_pResourceManager = nullptr;
 		Render::Renderer * m_pRenderer = nullptr;
-		IScene* m_pScene = nullptr;
+		SceneManager* m_pSceneManager = nullptr;
 		IMovableObject* m_pMoveTarget = nullptr;
 		Core::Timer* m_pTimer = nullptr;
 

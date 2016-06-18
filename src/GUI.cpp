@@ -6,6 +6,7 @@
 #include <nanogui/nanogui.h>
 #include <iostream>
 #include "NanoGUIImplementation.h"
+#include "ObjectPropertyWindow.h"
 
 
 GUI::GUI(GLFWwindow *pWindow)
@@ -56,4 +57,8 @@ bool GUI::OnKeyRelease(int key, int scancode, int mods) {
 
 bool GUI::OnScroll(double x, double y) {
 	return m_pScreen->scrollCallbackEvent(x, y);
+}
+
+ObjectPropertyWindow *GUI::MakeObjectPropertyWindow() {
+	return new ObjectPropertyWindow(m_pScreen);
 }
