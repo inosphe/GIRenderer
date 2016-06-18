@@ -73,3 +73,13 @@ void IMovableObject::Update(int ms) {
 glm::vec3 IMovableObject::Dir() {
 	return glm::vec3(0.0f, 0.0f, 1.0f) * m_qRotation;
 }
+
+void IMovableObject::SetDirection(const glm::vec3 &dir) {
+//	m_qRotation = glm::angleAxis()
+	glm::vec3 a, b;
+	a = glm::normalize(dir);
+	b = glm::vec3(.0f, .0f, -1.0f);
+	glm::vec3 axis = glm::cross(a, b);
+	float rad = glm::dot(a, b);
+	m_qRotation = glm::angleAxis(rad, axis);
+}

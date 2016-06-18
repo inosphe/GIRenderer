@@ -7,6 +7,7 @@
 #include "IModel.h"
 #include "Camera.h"
 #include "FBXModel.h"
+#include "Light.h"
 
 void TestScene3::Init() {
 	IScene::Init();
@@ -21,6 +22,12 @@ void TestScene3::Init() {
 	m_pMainCamera = std::shared_ptr<Render::Camera>(new Render::Camera());
 	m_pMainCamera->Init();
 	m_app.SetCamera(m_pMainCamera);
+	m_gameObjects.push_back(std::shared_ptr<GameObject>(m_pMainCamera));
+
+	auto light = new Light();
+	light->SetDirection(glm::vec3(1.0, -1.0, 1.0));
+	m_gameObjects.push_back(std::shared_ptr<GameObject>(light));
+
 }
 
 TestScene3::~TestScene3() {

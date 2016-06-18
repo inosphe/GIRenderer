@@ -25,6 +25,9 @@ public:
 	void Render(Render::RenderingParameters& rp);
 	void Update(int ms);
 
+public:
+	const unsigned int m_ID = 0;
+
 protected:
 	Render::IModel* m_pModel = nullptr;
 	string m_strName;

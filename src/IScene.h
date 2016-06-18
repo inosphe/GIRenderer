@@ -30,7 +30,6 @@ protected:
 	std::shared_ptr<Render::Camera> m_pMainCamera = nullptr;
 	Core::Application& m_app;
 	std::vector<std::shared_ptr<GameObject>> m_gameObjects;
-
 };
 
 

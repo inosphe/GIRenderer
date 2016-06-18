@@ -6,6 +6,7 @@
 #include <nanogui/nanogui.h>
 #include <iostream>
 #include <map>
+#include <Logger.h>
 
 using namespace nanogui;
 
@@ -36,6 +37,12 @@ void ObjectPropertyWindow::Init() {
 	AdvancedGridLayout* layout = gui->layout().get();
 	layout->appendRow(0);
 	layout->setAnchor(pCombobox, AdvancedGridLayout::Anchor(1, layout->rowCount()-1, 3, 1));
+	pCombobox->setChangeCallback([](bool b){
+		Logger::Debug("on click");
+	});
+	pCombobox->setCallback([](bool b){
+		Logger::Debug("on changed");
+	});
 
 	m_pCombobox = pCombobox;
 

@@ -23,7 +23,7 @@ namespace Render {
 	public:
 		FBXNode(FbxNode* pNode, Resource::ResourceManager& rm);
 		virtual ~FBXNode();
-		void Clear();
+		virtual void Clear() override;
 		void UpdateWorldTransform(const glm::mat4x4& matWorldTransform);
 		void Render(Render::RenderingParameters& rp) override;
 

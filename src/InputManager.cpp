@@ -3,6 +3,7 @@
 //
 
 #include "InputManager.h"
+#include "Logger.h"
 #include <InputDelegate.h>
 #include <GLFW/glfw3.h>
 #include <map>
@@ -26,6 +27,7 @@ namespace Core{
 	}
 
 	void InputManager::OnMouseButton(GLFWwindow *w, int button, int action, int modifiers) {
+//		Logger::Debug("OnMouseButton");
 		for(auto id : mapCallbackDelegate[w]->m_vecInputDelegates){
 			if(id->OnMouseButton(button, action, modifiers))
 				break;
@@ -35,7 +37,7 @@ namespace Core{
 
 	void InputManager::OnKey(GLFWwindow *w, int key, int scancode, int action, int mods) {
 		auto f = [key, action, mods](auto id, int scancode){
-			switch(scancode){
+			switch(action){
 				case GLFW_PRESS:
 					return id->OnKeyPress(key, action, mods);
 				case GLFW_REPEAT:
@@ -47,6 +49,8 @@ namespace Core{
 
 			}
 		};
+
+		printf("key (%d, %d\n", action, key);
 		for(auto id : mapCallbackDelegate[w]->m_vecInputDelegates){
 			if(f(id, scancode))
 				break;

@@ -7,15 +7,15 @@
 
 int GameObject::Counter = 0;
 
-GameObject::GameObject():IMovableObject() {
+GameObject::GameObject():IMovableObject(), m_ID(Counter++) {
 	string name = "GameObject";
-	name += Counter++;
+	name += m_ID;
 	SetName(name);
 }
 
-GameObject::GameObject(Render::IModel *pModel):IMovableObject(), m_pModel(pModel) {
+GameObject::GameObject(Render::IModel *pModel):IMovableObject(), m_pModel(pModel), m_ID(Counter++) {
 	string name = "GameObject";
-	name += Counter++;
+	name += m_ID;
 	SetName(name);
 }
 
@@ -34,5 +34,6 @@ void GameObject::Render(Render::RenderingParameters &rp) {
 
 void GameObject::Update(int ms) {
 	IMovableObject::Update(ms);
-	m_pModel->UpdateForRender();
+	if(m_pModel)
+		m_pModel->UpdateForRender();
 }

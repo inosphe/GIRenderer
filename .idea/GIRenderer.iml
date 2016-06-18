@@ -147,6 +147,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/IResourceLoader.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/IScene.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/IScene.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Light.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Light.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Logger.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Logger.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Material.cpp" isTestSource="false" />
@@ -588,22 +590,21 @@
         </SOURCES>
         <excluded>
           <root url="file://$MODULE_DIR$/lib/external/glew/include" />
-          <root url="file://$MODULE_DIR$/lib/external/glfw/include/GLFW/glfw3native.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/include/GLFW/glfw3.h" />
+          <root url="file://$MODULE_DIR$/lib/external/glfw/include/GLFW/glfw3native.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/window.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/input.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/nsgl_context.m" />
+          <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_window.m" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/posix_tls.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/posix_tls.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_init.m" />
-          <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_window.m" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/vulkan.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/glfw3.pc.in" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_joystick.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/init.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_time.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/nsgl_context.h" />
-          <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_platform.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/context.c" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/glfw3Config.cmake.in" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/CMakeLists.txt" />
@@ -611,6 +612,7 @@
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/glfw_config.h.in" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_joystick.m" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/monitor.c" />
+          <root url="file://$MODULE_DIR$/lib/external/glfw/src/cocoa_platform.h" />
           <root url="file://$MODULE_DIR$/lib/external/glfw/src/internal.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/ext/nanovg/src/nanovg.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/ext/nanovg/src/nanovg.c" />
@@ -618,17 +620,16 @@
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/glutil.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/progressbar.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/messagedialog.h" />
-          <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/colorwheel.h" />
+          <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/theme.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/checkbox.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/serializer/opengl.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/imageview.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/vscrollpanel.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/toolbutton.h" />
-          <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/theme.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/label.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/window.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/colorpicker.h" />
-          <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/common.h" />
+          <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/colorwheel.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/slider.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/serializer/sparse.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/serializer/core.h" />
@@ -643,8 +644,9 @@
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/widget.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/formhelper.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/nanogui.h" />
+          <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/common.h" />
           <root url="file://$MODULE_DIR$/lib/nanogui/include/nanogui/screen.h" />
-          <root url="file://$MODULE_DIR$/src/Camera.h" />
+          <root url="file://$MODULE_DIR$/src/Light.cpp" />
           <root url="file://$MODULE_DIR$/src/Logger.cpp" />
           <root url="file://$MODULE_DIR$/src/DeferredRenderingStrategy.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXLoader.h" />
@@ -659,11 +661,10 @@
           <root url="file://$MODULE_DIR$/src/Vertex.cpp" />
           <root url="file://$MODULE_DIR$/src/util/GLUtil.h" />
           <root url="file://$MODULE_DIR$/src/Renderer.cpp" />
-          <root url="file://$MODULE_DIR$/src/Material.h" />
+          <root url="file://$MODULE_DIR$/src/IMesh.cpp" />
           <root url="file://$MODULE_DIR$/src/ObjectPropertyWindow.h" />
           <root url="file://$MODULE_DIR$/src/IModel.cpp" />
           <root url="file://$MODULE_DIR$/src/Material.cpp" />
-          <root url="file://$MODULE_DIR$/src/IRenderingStrategy.h" />
           <root url="file://$MODULE_DIR$/src/ObjectPropertyWindow.cpp" />
           <root url="file://$MODULE_DIR$/src/AppState.h" />
           <root url="file://$MODULE_DIR$/src/FBXMaterial.h" />
@@ -675,6 +676,7 @@
           <root url="file://$MODULE_DIR$/src/IMovableObject.cpp" />
           <root url="file://$MODULE_DIR$/src/TestScene.h" />
           <root url="file://$MODULE_DIR$/src/Vertex.h" />
+          <root url="file://$MODULE_DIR$/src/Light.h" />
           <root url="file://$MODULE_DIR$/src/DeferredRenderingStrategy.h" />
           <root url="file://$MODULE_DIR$/src/Timer.h" />
           <root url="file://$MODULE_DIR$/src/ForwardRenderingStrategy.h" />
@@ -682,6 +684,7 @@
           <root url="file://$MODULE_DIR$/src/DummyModel.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXMaterial.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXNode.h" />
+          <root url="file://$MODULE_DIR$/src/NanoGUIImplementation.h" />
           <root url="file://$MODULE_DIR$/src/DummyModel.h" />
           <root url="file://$MODULE_DIR$/src/GUI.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXLoader.cpp" />
@@ -702,9 +705,11 @@
           <root url="file://$MODULE_DIR$/src/util/FBXUtil.h" />
           <root url="file://$MODULE_DIR$/src/ResourceManager.h" />
           <root url="file://$MODULE_DIR$/src/ResourceManager.cpp" />
+          <root url="file://$MODULE_DIR$/src/Material.h" />
           <root url="file://$MODULE_DIR$/src/GameObject.cpp" />
           <root url="file://$MODULE_DIR$/src/DummyModel2.cpp" />
           <root url="file://$MODULE_DIR$/src/fbxtest.cpp" />
+          <root url="file://$MODULE_DIR$/src/Camera.h" />
           <root url="file://$MODULE_DIR$/src/Renderer.h" />
           <root url="file://$MODULE_DIR$/src/TestScene.cpp" />
           <root url="file://$MODULE_DIR$/src/FBXScene.cpp" />
@@ -716,9 +721,9 @@
           <root url="file://$MODULE_DIR$/src/Application.h" />
           <root url="file://$MODULE_DIR$/src/SceneManager.cpp" />
           <root url="file://$MODULE_DIR$/src/InputManager.cpp" />
-          <root url="file://$MODULE_DIR$/src/IMesh.cpp" />
           <root url="file://$MODULE_DIR$/src/AppState.cpp" />
           <root url="file://$MODULE_DIR$/src/util/GLUtil.cpp" />
+          <root url="file://$MODULE_DIR$/src/IRenderingStrategy.h" />
           <root url="file://$MODULE_DIR$/src/ForwardRenderingStrategy.cpp" />
           <root url="file://$MODULE_DIR$/src/TestScene3.h" />
           <root url="file://$MODULE_DIR$/src/SceneManager.h" />
@@ -729,7 +734,6 @@
           <root url="file://$MODULE_DIR$/src/IScene.cpp" />
           <root url="file://$MODULE_DIR$/src/util/FBXUtil.cpp" />
           <root url="file://$MODULE_DIR$/src/IResourceLoader.cpp" />
-          <root url="file://$MODULE_DIR$/src/NanoGUIImplementation.h" />
           <root url="file://$MODULE_DIR$/src/RenderingParameters.cpp" />
           <root url="file://$USER_HOME$/Library/Caches/CLion12/cmake/generated/9f418139/9f418139/Debug/lib/nanogui/nanogui_resources.cpp" />
           <root url="file://$USER_HOME$/Library/Caches/CLion12/cmake/generated/9f418139/9f418139/MinSizeRel/lib/nanogui/nanogui_resources.cpp" />

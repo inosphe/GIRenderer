@@ -7,6 +7,7 @@
 #include <iostream>
 #include "NanoGUIImplementation.h"
 #include "ObjectPropertyWindow.h"
+#include "Logger.h"
 
 
 GUI::GUI(GLFWwindow *pWindow)
@@ -40,6 +41,7 @@ bool GUI::OnMousePos(int x, int y) {
 }
 
 bool GUI::OnMouseButton(int button, int action, int modifier) {
+	Logger::Debug("mouse button");
 	return m_pScreen->mouseButtonCallbackEvent(button, action, modifier);
 }
 

@@ -28,6 +28,7 @@ public:
 	virtual void Update(int ms);
 
 	void SetPosition(const glm::vec3& pos);
+	void SetDirection(const glm::vec3& dir);
 	glm::mat4x4 GetTransform();
 
 protected:

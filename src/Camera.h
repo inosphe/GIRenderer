@@ -6,11 +6,11 @@
 #define PROJECT_CAMERA_H
 
 #include <glm/vec3.hpp>
-#include "IMovableObject.h"
+#include "GameObject.h"
 
 namespace Render{
 
-	class Camera : public IMovableObject {
+	class Camera : public GameObject {
 	public:
 		Camera();
 		virtual ~Camera();

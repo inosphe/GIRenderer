@@ -22,10 +22,6 @@ namespace Render{
 		m_matWorldTransform = GetTransform();
 	}
 
-	void IModel::Update(int ms) {
-		IMovableObject::Update(ms);
-	}
-
 	void IModel::Clear() {
 		_Clear();
 		IMesh::Clear();

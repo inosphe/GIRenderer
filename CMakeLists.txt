@@ -64,7 +64,7 @@ find_package(OpenGL REQUIRED)
 
 file(GLOB SRC "src/*.cpp" "src/*/*.cpp")
 
-add_executable("opengl-boilerplate" main.cpp ${SRC} src/ObjectPropertyWindow.cpp src/ObjectPropertyWindow.h src/SceneManager.cpp src/SceneManager.h src/GameObject.cpp src/GameObject.h)
+add_executable("opengl-boilerplate" main.cpp ${SRC} src/ObjectPropertyWindow.cpp src/ObjectPropertyWindow.h src/SceneManager.cpp src/SceneManager.h src/GameObject.cpp src/GameObject.h src/Light.cpp src/Light.h)
 target_link_libraries("opengl-boilerplate" nanogui)
 target_link_libraries("opengl-boilerplate" glfw ${GLFW_LIBRARIES} glew ${OPENGL_LIBRARIES} ${FBX_SDK_LIB_RELEASE} "-framework Cocoa" )
 #

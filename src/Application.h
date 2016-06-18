@@ -12,6 +12,7 @@ class IScene;
 #include "ResourceManager.h"
 #include "AppState.h"
 #include <map>
+#include "InputDelegate.h"
 
 namespace Render{
 	class Renderer;
@@ -26,28 +27,31 @@ class IMovableObject;
 class GUI;
 
 namespace Core {
-	class Timer;
 	class InputManager;
+	class Timer;
 	class SceneManager;
 
-	class Application {
+	class Application : public InputDelegate{
 	public:
 		Application(GLFWwindow* pWindow);
 		~Application();
 
 		bool Initialize();
-		void InitInputs();
 		void Clear();
 
 		void Update();
 		void Render();
 
 
-		void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 		inline Resource::ResourceManager& GetResourceManager(){return *m_pResourceManager;}
 
 		void SetCamera(std::shared_ptr<Render::Camera> pCamera);
 		GUI& GetGUI(){return *m_pGUI;}
+
+	protected:
+		virtual bool OnKeyRelease(int key, int scancode, int mods);
+		virtual bool OnKeyRepeat(int key, int scancode, int mods);
+		virtual bool OnKeyPress(int key, int scancode, int mods);
 
 	private:
 		bool InitResourceManager();

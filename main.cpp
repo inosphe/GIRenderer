@@ -17,9 +17,6 @@ static void error_callback(int error, const char *description) {
 
 
 static Core::Application* pKenInputTarget = nullptr;
-static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-	pKenInputTarget->KeyCallback(window, key, scancode, action, mods);
-}
 
 static void render(GLFWwindow *window) {
 }
@@ -64,9 +61,6 @@ int main(void) {
 */
 		Core::Application app(window);
 		app.Initialize();
-		pKenInputTarget = &app;
-
-		glfwSetKeyCallback(window, key_callback);
 
 		int w, h;
 		glfwGetFramebufferSize(window, &w, &h);

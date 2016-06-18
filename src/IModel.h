@@ -13,8 +13,8 @@ namespace Render{
 	public:
 		IModel();
 		virtual ~IModel();
+
 		virtual void UpdateForRender() override;
-		virtual void Update(int ms);
 
 		virtual void Clear() override;
 

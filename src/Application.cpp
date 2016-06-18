@@ -30,21 +30,7 @@ namespace Core {
 	Application::Application(GLFWwindow* pWindow)
 	:m_pWindow(pWindow)
 	{
-		m_mapActionKeys[std::make_tuple(GLFW_PRESS, GLFW_KEY_T)] = [this](){
-			this->m_state.bRenderGUI=!this->m_state.bRenderGUI;
-		};
-		m_mapActionKeys[std::make_tuple(GLFW_PRESS, GLFW_KEY_W)] = [this](){this->m_pMoveTarget->Up();};
-		m_mapActionKeys[std::make_tuple(GLFW_REPEAT, GLFW_KEY_W)] = [this](){this->m_pMoveTarget->Up();};
-		m_mapActionKeys[std::make_tuple(GLFW_RELEASE, GLFW_KEY_W)] = [this](){this->m_pMoveTarget->Stop();};
-		m_mapActionKeys[std::make_tuple(GLFW_PRESS, GLFW_KEY_S)] = [this](){this->m_pMoveTarget->Down();};
-		m_mapActionKeys[std::make_tuple(GLFW_REPEAT, GLFW_KEY_S)] = [this](){this->m_pMoveTarget->Down();};
-		m_mapActionKeys[std::make_tuple(GLFW_RELEASE, GLFW_KEY_S)] = [this](){this->m_pMoveTarget->Stop();};
-		m_mapActionKeys[std::make_tuple(GLFW_PRESS, GLFW_KEY_A)] = [this](){this->m_pMoveTarget->Left();};
-		m_mapActionKeys[std::make_tuple(GLFW_REPEAT, GLFW_KEY_A)] = [this](){this->m_pMoveTarget->Left();};
-		m_mapActionKeys[std::make_tuple(GLFW_RELEASE, GLFW_KEY_A)] = [this](){this->m_pMoveTarget->Stop();};
-		m_mapActionKeys[std::make_tuple(GLFW_PRESS, GLFW_KEY_D)] = [this](){this->m_pMoveTarget->Right();};
-		m_mapActionKeys[std::make_tuple(GLFW_REPEAT, GLFW_KEY_D)] = [this](){this->m_pMoveTarget->Right();};
-		m_mapActionKeys[std::make_tuple(GLFW_RELEASE, GLFW_KEY_D)] = [this](){this->m_pMoveTarget->Stop();};
+
 	}
 
 	bool Application::Initialize() {
@@ -67,6 +53,7 @@ namespace Core {
 
 		m_pInputManager = new InputManager();
 		m_pInputManager->Init(m_pWindow);
+		m_pInputManager->AddDelegate(this);
 		m_pInputManager->AddDelegate(m_pGUI);
 
 		m_pSceneManager = new SceneManager(this);
@@ -128,19 +115,71 @@ namespace Core {
 		glfwSwapBuffers(m_pWindow);
 	}
 
-	void Application::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, GL_TRUE);
-		else{
-			auto itr = m_mapActionKeys.find(std::make_tuple(action, key));
-			if(itr != m_mapActionKeys.end())
-				itr->second();
-		}
-	}
-
 	void Application::SetCamera(std::shared_ptr<Render::Camera> pCamera) {
 		m_pRenderer->SetCamera(pCamera);
 		m_pMoveTarget = pCamera.get();
 	}
 
+	bool Application::OnKeyPress(int key, int scancode, int mods) {
+		switch(key){
+			case GLFW_KEY_ESCAPE:
+				glfwSetWindowShouldClose(m_pWindow, GL_TRUE);
+				return true;
+			case GLFW_KEY_T:
+				this->m_state.bRenderGUI=!this->m_state.bRenderGUI;
+				return true;
+			case GLFW_KEY_W:
+				this->m_pMoveTarget->Up();
+				return true;
+			case GLFW_KEY_S:
+				this->m_pMoveTarget->Down();
+				return true;
+			case GLFW_KEY_A:
+				this->m_pMoveTarget->Left();
+				return true;
+			case GLFW_KEY_D:
+				this->m_pMoveTarget->Right();
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	bool Application::OnKeyRepeat(int key, int scancode, int mods) {
+		switch(key){
+			case GLFW_KEY_W:
+				this->m_pMoveTarget->Up();
+				return true;
+			case GLFW_KEY_S:
+				this->m_pMoveTarget->Down();
+				return true;
+			case GLFW_KEY_A:
+				this->m_pMoveTarget->Left();
+				return true;
+			case GLFW_KEY_D:
+				this->m_pMoveTarget->Right();
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	bool Application::OnKeyRelease(int key, int scancode, int mods) {
+		switch(key){
+			case GLFW_KEY_W:
+				this->m_pMoveTarget->Stop();
+				return true;
+			case GLFW_KEY_S:
+				this->m_pMoveTarget->Stop();
+				return true;
+			case GLFW_KEY_A:
+				this->m_pMoveTarget->Stop();
+				return true;
+			case GLFW_KEY_D:
+				this->m_pMoveTarget->Stop();
+				return true;
+			default:
+				return false;
+		}
+	}
 }

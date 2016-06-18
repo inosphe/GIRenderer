@@ -23,12 +23,12 @@ namespace Core{
 			, COUNT
 		};
 	public:
-		virtual bool OnMousePos(int x, int y) = 0;
-		virtual bool OnMouseButton(int button, int action, int modifier) = 0;
-		virtual bool OnKeyPress(int key, int scancode, int mods) = 0;
-		virtual bool OnKeyRepeat(int key, int scancode, int mods) = 0;
-		virtual bool OnKeyRelease(int key, int scancode, int mods) = 0;
-		virtual bool OnScroll(double x, double y) = 0;
+		virtual bool OnMousePos(int x, int y){return false;}
+		virtual bool OnMouseButton(int button, int action, int modifier){return false;}
+		virtual bool OnKeyPress(int key, int scancode, int mods){return false;}
+		virtual bool OnKeyRepeat(int key, int scancode, int mods){return false;}
+		virtual bool OnKeyRelease(int key, int scancode, int mods){return false;}
+		virtual bool OnScroll(double x, double y){return false;}
 
 		void SetEnable(INPUT_TYPE type, bool enabled);
 		inline bool IsEnabled(INPUT_TYPE type){return m_enabled[(int)type];}
