@@ -10,7 +10,7 @@
 
 namespace Render{
 	Camera::Camera() {
-
+		SetName("Main camera");
 	}
 
 	Camera::~Camera() {
