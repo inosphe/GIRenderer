@@ -40,8 +40,8 @@ namespace Core {
 
 		m_pRenderer = new Render::Renderer();
 		m_pRenderer->Init();
-//		m_pRenderer->InitRenderingStrategy<Render::ForwardRenderingStrategy>();
-		m_pRenderer->InitRenderingStrategy<Render::DeferredRenderingStrategy>();
+		m_pRenderer->InitRenderingStrategy<Render::ForwardRenderingStrategy>();
+//		m_pRenderer->InitRenderingStrategy<Render::DeferredRenderingStrategy>();
 
 		glFrontFace(GL_CW);
 //		glCullFace(GL_;
