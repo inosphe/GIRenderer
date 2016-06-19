@@ -31,8 +31,11 @@ void ObjectPropertyWindow::Init() {
 	m_pGUI = new FormHelper(m_pParent);
 	ref<Window> window = m_pGUI->addWindow(Eigen::Vector2i(0, 0), "Object property");
 	window->setWidth(200);
+	window->setHeight(400);
 //	window->setLayout(new GridLayout(Orientation::Horizontal, 2, Alignment::Middle, 0, 20));
 //	window->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Middle, 0, 20));
+	m_pGUI->setFixedSize(Eigen::Vector2i(80, 0));
+
 
 	ComboBox* pCombobox = new ComboBox(window);
 	AdvancedGridLayout* layout = m_pGUI->layout().get();
@@ -87,27 +90,28 @@ void ObjectPropertyWindow::Init() {
 			, std::bind(&PropertyValue<GameObject, float>::Get, &prop_rot_z)
 			, true);
 
-	m_pGUI->addGroup("Validating fields");
-	static int i = 1;
-	m_pGUI->addVariable("int", i);
-	static float f = 2.3f;
-	m_pGUI->addVariable("float", f);
-	static double d = 4.9;
-	m_pGUI->addVariable("double", d);
-
-	m_pGUI->addGroup("Complex types");
-	static test_enum e = Item1;
-	m_pGUI->addVariable("Enumeration", e, true)
-		->setItems({"Item 1", "Item 2", "Item 3"});
-
-	static nanogui::Color c(0.7f, 0.2f, 0.5f, 1.0f);
-	m_pGUI->addVariable("Color", c);
-
-	m_pGUI->addGroup("Other widgets");
-	m_pGUI->addButton("A button", [](){ std::cout << "Button pressed." << std::endl; });
+//	m_pGUI->addGroup("Validating fields");
+//	static int i = 1;
+//	m_pGUI->addVariable("int", i);
+//	static float f = 2.3f;
+//	m_pGUI->addVariable("float", f);
+//	static double d = 4.9;
+//	m_pGUI->addVariable("double", d);
+//
+//	m_pGUI->addGroup("Complex types");
+//	static test_enum e = Item1;
+//	m_pGUI->addVariable("Enumeration", e, true)
+//		->setItems({"Item 1", "Item 2", "Item 3"});
+//
+//	static nanogui::Color c(0.7f, 0.2f, 0.5f, 1.0f);
+//	m_pGUI->addVariable("Color", c);
+//
+//	m_pGUI->addGroup("Other widgets");
+//	m_pGUI->addButton("A button", [](){ std::cout << "Button pressed." << std::endl; });
 
 	m_pParent->setVisible(true);
 	m_pParent->performLayout();
+
 //	window->center();
 }
 
