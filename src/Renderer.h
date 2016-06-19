@@ -33,12 +33,11 @@ namespace Render {
 			m_pRenderingStrategy->Init();
 		};
 
-		void RenderBegin();
-		void RenderEnd();
+		void Render(std::function<void()> fRenderModels);
 
 		void SetCamera(std::shared_ptr<Render::Camera> pCamera);
 		std::shared_ptr<Render::Camera> GetTargetCamera(){return m_pCamera;}
-		Render::Camera* GetTargetCameraRaw(){return m_pCamera.get();}
+		Render::Camera& GetTargetCameraRef(){return *m_pCamera.get();}
 		inline RenderingParameters& GetRenderingParameters(){return m_pRenderingStrategy->GetShader();}
 	private:
 		IRenderingStrategy* m_pRenderingStrategy = nullptr;

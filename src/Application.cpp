@@ -24,6 +24,7 @@
 #include "Timer.h"
 #include "GUI.h"
 #include "SceneManager.h"
+#include "DeferredRenderingStrategy.h"
 #include <InputManager.h>
 
 namespace Core {
@@ -39,7 +40,8 @@ namespace Core {
 
 		m_pRenderer = new Render::Renderer();
 		m_pRenderer->Init();
-		m_pRenderer->InitRenderingStrategy<Render::ForwardRenderingStrategy>();
+//		m_pRenderer->InitRenderingStrategy<Render::ForwardRenderingStrategy>();
+		m_pRenderer->InitRenderingStrategy<Render::DeferredRenderingStrategy>();
 
 		glFrontFace(GL_CW);
 //		glCullFace(GL_;
@@ -106,11 +108,7 @@ namespace Core {
 	}
 
 	void Application::Render() {
-		m_pRenderer->RenderBegin();
-		m_pSceneManager->Render(m_pRenderer->GetRenderingParameters());
-		m_pRenderer->RenderEnd();
-
-
+		m_pRenderer->Render([this](){m_pSceneManager->Render(m_pRenderer->GetRenderingParameters());});
 
 		if(m_state.bRenderGUI)
 			m_pGUI->Render();

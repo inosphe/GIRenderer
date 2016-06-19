@@ -74,7 +74,7 @@ void IMovableObject::Update(int ms) {
 	m_vPosition += m_vVelocity * (ms / 1000.0f);
 }
 
-glm::vec3 IMovableObject::Dir() {
+glm::vec3 IMovableObject::Dir() const{
 	return ZAXIS * m_qRotation;
 }
 

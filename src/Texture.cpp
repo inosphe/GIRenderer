@@ -5,9 +5,7 @@
 #include "Texture.h"
 #include "RenderingParameters.h"
 
-Render::Texture::Texture(int iOffset, Resource::Image::PTR pImage)
-:m_iTexOffset(iOffset)
-{
+Render::Texture::Texture(Resource::Image::PTR pImage){
 	InitTexture(pImage);
 }
 
@@ -31,9 +29,10 @@ void Render::Texture::InitTexture(Resource::Image::PTR pImage) {
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 }
 
-void Render::Texture::Bind(Render::RenderingParameters &rp) const {
+void Render::Texture::Bind(Render::RenderingParameters &rp, int i) const {
+	glActiveTexture(GL_TEXTURE0+i);
 	glBindTexture(GL_TEXTURE_2D, GetID());
-	rp.BindTexture(0, GetTexOffset());
+	rp.BindTexture(i);
 }
 
 void Render::Texture::Clear() {

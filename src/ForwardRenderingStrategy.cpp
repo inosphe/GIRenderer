@@ -7,6 +7,7 @@
 #include "Exception.h"
 #include <cassert>
 #include "RenderingParameters.h"
+#include "RenderPass.h"
 
 namespace Render{
 	ForwardRenderingStrategy::ForwardRenderingStrategy()
@@ -22,30 +23,15 @@ namespace Render{
 	void ForwardRenderingStrategy::Init() {
 		IRenderingStrategy::Init();
 
-		try{
-			glAttachShader(m_uProgram, GLUtil::LoadShader(GL_VERTEX_SHADER, "shader/textured.vert.glsl"));
-			glAttachShader(m_uProgram, GLUtil::LoadShader(GL_FRAGMENT_SHADER, "shader/textured.frag.glsl"));
-			glLinkProgram(m_uProgram);
-
-			m_pParameters = new RenderingParameters(m_uProgram);
-			m_pParameters->Init();
-		}
-		catch(const Core::Exception& ex){
-			assert(false);
-		}
+		RenderPass* pRenderPass = new RenderPass();
+		pRenderPass->Init("shader/textured.vert.glsl", "shader/textured.frag.glsl");
+		AddRenderPass(pRenderPass, 0);
 	}
 
-	void ForwardRenderingStrategy::Clear() {
-		IRenderingStrategy::Clear();
-
-	}
-
-	void ForwardRenderingStrategy::RenderBegin() {
-		IRenderingStrategy::RenderBegin();
-		glDisable(GL_BLEND);
-	}
-
-	void ForwardRenderingStrategy::RenderEnd() {
-		IRenderingStrategy::RenderEnd();
+	void ForwardRenderingStrategy::Render(const Camera& camera, std::function<void()> fRenderModels) {
+		RenderBegin(0);
+			GetShader().BindCamera(camera);
+			fRenderModels();
+		RenderEnd();
 	}
 }

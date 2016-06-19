@@ -25,6 +25,8 @@ int Resource::Image::GetFormat() {
 		case 1:
 			return GL_RED;
 	}
+
+	return -1;
 }
 
 Resource::Image::~Image() {

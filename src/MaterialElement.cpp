@@ -16,12 +16,12 @@ Render::MaterialElement::~MaterialElement() {
 
 void Render::MaterialElement::AddTexture(Resource::Image::PTR pImage) {
 	if(pImage != nullptr)
-		m_vecTexture.push_back(new Texture(m_vecTexture.size(), pImage));
+		m_vecTexture.push_back(new Texture(pImage));
 }
 
 void Render::MaterialElement::Bind(Render::RenderingParameters& rp) const {
-	for(auto tex : m_vecTexture){
-		tex->Bind(rp);
+	for(int i=0; i<m_vecTexture.size(); ++i){
+		m_vecTexture[i]->Bind(rp, i);
 	}
 }
 

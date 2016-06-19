@@ -13,10 +13,9 @@ namespace Render{
 
 	class Texture {
 	public:
-		Texture(int iOffset, Resource::Image::PTR pImage);
+		Texture(Resource::Image::PTR pImage);
 		virtual ~Texture();
-		void Bind(Render::RenderingParameters& rp) const;
-		inline int GetTexOffset() const {return m_iTexOffset;}
+		void Bind(Render::RenderingParameters& rp, int i) const;
 		inline GLuint GetID() const {return m_uTexture;}
 		void Clear();
 
@@ -24,7 +23,6 @@ namespace Render{
 		void InitTexture(Resource::Image::PTR pImage);
 
 	private:
-		int m_iTexOffset = 0;
 		GLuint m_uTexture = 0;
 	};
 }

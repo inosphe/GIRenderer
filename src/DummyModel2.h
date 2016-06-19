@@ -9,7 +9,7 @@
 
 class DummyModel2 : public Render::IModel{
 public:
-	void Init();
+	void Init() override;
 	void Update(int ms) override;
 };
 

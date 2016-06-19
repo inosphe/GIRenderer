@@ -4,6 +4,7 @@
 
 #include "IRenderingStrategy.h"
 #include "RenderingParameters.h"
+#include "RenderPass.h"
 
 namespace Render{
 
@@ -15,24 +16,34 @@ namespace Render{
 	}
 
 	void IRenderingStrategy::Init(){
-		m_uProgram = glCreateProgram();
 	}
 
 	void IRenderingStrategy::Clear(){
-		if(m_uProgram)
-			glDeleteProgram(m_uProgram);
-		m_uProgram = 0;
-
-		if(m_pParameters)
-			m_pParameters->Clear();
-		SAFE_DELETE(m_pParameters);
+		for(auto pRenderPass : m_vecRenderPass){
+			SAFE_DELETE(pRenderPass);
+		}
+		m_vecRenderPass.clear();
 	}
 
-	void IRenderingStrategy::RenderBegin() {
-		glUseProgram(m_uProgram);
+	void IRenderingStrategy::RenderBegin(int nRenderPass) {
+		SetRenderPass(nRenderPass);
+		GetCurrentRenderPass()->RenderBegin();
 	}
 
 	void IRenderingStrategy::RenderEnd() {
+		GetCurrentRenderPass()->RenderEnd();
+	}
 
+	void IRenderingStrategy::AddRenderPass(RenderPass *pRenderPass, int i) {
+		if(i>=0){
+			m_vecRenderPass.insert(m_vecRenderPass.begin()+i, pRenderPass);
+		}
+		else{
+			m_vecRenderPass.push_back(pRenderPass);
+		}
+	}
+
+	RenderingParameters &IRenderingStrategy::GetShader() {
+		return GetCurrentRenderPass()->GetShader();
 	}
 }

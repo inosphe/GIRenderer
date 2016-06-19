@@ -16,6 +16,8 @@ bool Resource::FBX::FBXMaterial::InitFbx(FbxNode *pNode, Resource::ResourceManag
 		FbxSurfaceMaterial *lMaterial = pNode->GetMaterial(lCount);
 		InitMaterial(lMaterial, rm);
 	}
+
+	return true;
 }
 
 Resource::FBX::FBXMaterial::~FBXMaterial() {

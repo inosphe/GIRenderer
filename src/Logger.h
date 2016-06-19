@@ -9,6 +9,7 @@
 
 class Logger {
 public:
+	static void Debug(const char* szMessage);
 	static void Debug(const string& str);
 	static void Error(const char* szMessage);
 	static void Error(const string& str);

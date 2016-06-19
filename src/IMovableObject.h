@@ -22,7 +22,7 @@ public:
 	virtual void Right();
 	virtual void Stop();
 
-	glm::vec3 Dir();
+	glm::vec3 Dir() const;
 
 	virtual void Rotate(float tx, float ty);
 	virtual void Update(int ms);

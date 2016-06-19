@@ -10,6 +10,7 @@
 #include <cassert>
 #include "Logger.h"
 #include <OPENGL/glu.h>
+#include <sstream>
 
 // helper to check and display for shader compiler errors
 static bool check_shader_compile_status(GLuint obj) {
@@ -45,13 +46,13 @@ namespace GLUtil{
 		glShaderSource(uShader, 1, &szShader, &size);
 		glCompileShader(uShader);
 
-		SAFE_DELETE(szShader);
+		SAFE_DELETE_ARRAY(szShader);
 
 		if(!check_shader_compile_status(uShader)){
-			assert(false);
 			glDeleteShader(uShader);
 			uShader = 0;
 			Logger::Error("compile '"+strFilepath+"' was failed.");
+			assert(false);
 		}
 
 		GLint nLogLength = 0;
@@ -73,7 +74,8 @@ namespace GLUtil{
 		// check for errors
 		GLenum error = glGetError();
 		if(error != GL_NO_ERROR) {
-			Logger::Debug(""+error);
+			string str = static_cast<const std::ostringstream&>(std::ostringstream() << std::dec << error).str();
+			Logger::Debug(str);
 			Logger::Error((const char*)gluErrorString(error));
 			assert(false);
 			return false;

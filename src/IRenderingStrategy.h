@@ -7,9 +7,13 @@
 
 #include <GLFW/glfw3.h>
 #include "common_header.h"
+#include <vector>
+#include <functional>
 
 namespace Render{
 	class RenderingParameters;
+	class RenderPass;
+	class Camera;
 
 	class IRenderingStrategy {
 	public:
@@ -19,14 +23,20 @@ namespace Render{
 		virtual void Init();
 		virtual void Clear();
 
-		virtual void RenderBegin();
-		virtual void RenderEnd();
+		void AddRenderPass(RenderPass* pRenderPass, int i=-1);
 
-		RenderingParameters& GetShader(){return *m_pParameters;}
+		void RenderBegin(int nRenderPass);
+		void RenderEnd();
 
+		inline void SetRenderPass(int i){m_nRenderPass = i;}
+		inline RenderPass* GetRenderPass(int i){return m_vecRenderPass[i];}
+		inline RenderPass* GetCurrentRenderPass(){return GetRenderPass(m_nRenderPass);}
+		RenderingParameters& GetShader();
+
+		virtual void Render(const Camera& camera, std::function<void()> fRenderModels)=0;
 	protected:
-		GLuint m_uProgram = 0;
-		RenderingParameters* m_pParameters = nullptr;
+		int m_nRenderPass = 0;
+		std::vector<RenderPass*> m_vecRenderPass;
 	};
 };
 

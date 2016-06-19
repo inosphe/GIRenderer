@@ -21,7 +21,7 @@ namespace Render{
 		SetPosition(glm::vec3(0, 250.0f, 50.0f));
 	}
 
-	const glm::mat4 Camera::GetViewProj() {
+	const glm::mat4 Camera::GetViewProj() const{
 		glm::mat4 identity(1.0f);
 
 		// calculate ViewProjection matrix

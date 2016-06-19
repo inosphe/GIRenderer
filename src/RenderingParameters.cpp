@@ -23,6 +23,8 @@ namespace Render{
 		m_uLookLocation = glGetUniformLocation(m_uProgram, "Look");
 		m_uViewProjLocation = glGetUniformLocation(m_uProgram, "ViewProjection");
 		m_uTextureLocation = glGetUniformLocation(m_uProgram, "Tex0");
+
+		GLUtil::CheckError();
 	}
 
 	void RenderingParameters::Clear() {
@@ -30,27 +32,38 @@ namespace Render{
 	}
 
 	void RenderingParameters::SetObjectTransform(const glm::mat4x4 &matTransform) {
+		if(m_uTransformLocation<0)
+			return;
+
 		glUniformMatrix4fv(m_uTransformLocation, 1, GL_FALSE, glm::value_ptr(matTransform));
 //		assert(glGetError() == GL_NO_ERROR);
 	}
 
-	void RenderingParameters::BindCamera(Camera *pCamera) {
-		// set the uniform
-		GLUtil::CheckError();
-		glUniformMatrix4fv(m_uViewProjLocation, 1, GL_FALSE, value_ptr(pCamera->GetViewProj()));
-		GLUtil::CheckError();
-		auto dir = pCamera->Dir();
-		dir = glm::normalize(dir);
-		glUniform3fv(m_uLookLocation, 1, value_ptr(dir));
+	void RenderingParameters::BindCamera(const Camera& camera) {
+		if(m_uViewProjLocation >= 0){
+			// set the uniform
+			GLUtil::CheckError();
+			glm::mat4 matViewProj = camera.GetViewProj();
+			glUniformMatrix4fv(m_uViewProjLocation, 1, GL_FALSE, value_ptr(matViewProj));
+			GLUtil::CheckError();
+		}
+
+		if(m_uLookLocation >= 0){
+			auto dir = camera.Dir();
+			dir = glm::normalize(dir);
+			glUniform3fv(m_uLookLocation, 1, value_ptr(dir));
+		}
 
 		GLUtil::CheckError();
 		assert(glGetError() == GL_NO_ERROR);
 	}
 
-	void RenderingParameters::BindTexture(int index, const GLuint id) {
+	void RenderingParameters::BindTexture(int index) {
+		if(m_uTextureLocation < 0)
+			return;
 		assert(index == 0);
 
-		glUniform1i(m_uTextureLocation, id);
+		glUniform1i(m_uTextureLocation, index);
 //		assert(glGetError() == GL_NO_ERROR);
 	}
 }

@@ -20,16 +20,16 @@ namespace Render{
 		void Clear();
 		void SetObjectTransform(const glm::mat4x4& matTransform);
 
-		void BindCamera(Camera* pCamera);
-		void BindTexture(int index, const GLuint id);
+		void BindCamera(const Camera& camera);
+		void BindTexture(int index);
 
 	private:
 		GLuint m_uProgram = 0;
 
-		GLuint m_uTransformLocation;
-		GLuint m_uLookLocation;
-		GLuint m_uViewProjLocation;
-		GLuint m_uTextureLocation;
+		GLint m_uTransformLocation = -1;
+		GLint m_uLookLocation = -1;
+		GLint m_uViewProjLocation = -1;
+		GLint m_uTextureLocation = -1;
 	};
 }
 

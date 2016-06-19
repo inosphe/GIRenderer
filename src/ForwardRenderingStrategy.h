@@ -7,7 +7,6 @@
 
 
 #include "IRenderingStrategy.h"
-#include <GLFW/glfw3.h>
 
 namespace Render{
 	class ForwardRenderingStrategy : public IRenderingStrategy{
@@ -16,13 +15,11 @@ namespace Render{
 		virtual ~ForwardRenderingStrategy();
 
 		void Init() override;
-		void Clear() override;
 
-		virtual void RenderEnd() override;
-
-		virtual void RenderBegin() override;
+		virtual void Render(const Camera& camera, std::function<void()> fRenderModels) override;
 
 	private:
+
 	};
 }
 

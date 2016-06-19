@@ -29,20 +29,15 @@ namespace Render {
 		}
 	}
 
-	void Renderer::RenderBegin() {
-		glEnable(GL_DEPTH_TEST);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		m_pRenderingStrategy->RenderBegin();
-		auto shader = m_pRenderingStrategy->GetShader();
-		shader.BindCamera(GetTargetCameraRaw());
-	}
-
-	void Renderer::RenderEnd() {
-		m_pRenderingStrategy->RenderEnd();
-	}
-
 	void Renderer::SetCamera(std::shared_ptr<Render::Camera> pCamera) {
 		m_pCamera = pCamera;
+	}
+
+	void Renderer::Render(std::function<void()> fRenderModels) {
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		m_pRenderingStrategy->Render(GetTargetCameraRef(), fRenderModels);
 	}
 }
 
