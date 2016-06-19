@@ -39,7 +39,7 @@ int main(void) {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 //  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	window = glfwCreateWindow(1200, 720, "OpenGL Boilerplate", NULL, NULL);
+	window = glfwCreateWindow(1200, 720, "GIRenderer", NULL, NULL);
 	if (!window) {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
