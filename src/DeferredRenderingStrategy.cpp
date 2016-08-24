@@ -52,7 +52,7 @@ namespace Render{
 			glActiveTexture(GL_TEXTURE0);
 
 			glViewport(x, y, w/2, h/2);
-			glBindTexture(GL_TEXTURE_2D, pRenderPass0->m_uGBufferTex[0]);
+			glBindTexture(GL_TEXTURE_2D, pRenderPass0->m_uGBufferTex[3]);
 			GetShader().BindTexture(0);
 			m_quad.Render(GetShader());
 
@@ -67,7 +67,7 @@ namespace Render{
 			m_quad.Render(GetShader());
 
 			glViewport(x+w/2, y+h/2, w/2, h/2);
-			glBindTexture(GL_TEXTURE_2D, pRenderPass0->m_uGBufferTex[3]);
+			glBindTexture(GL_TEXTURE_2D, pRenderPass0->m_uGBufferTex[4]);
 			GetShader().BindTexture(0);
 			m_quad.Render(GetShader());
 		RenderEnd();
