@@ -21,6 +21,7 @@ namespace Render{
 	void RenderingParameters::Init() {
 		m_uTransformLocation = glGetUniformLocation(m_uProgram, "ObjectTransform");
 		m_uLookLocation = glGetUniformLocation(m_uProgram, "Look");
+		m_uCameraPosLocation = glGetUniformLocation(m_uProgram, "CameraPos");
 		m_uViewProjLocation = glGetUniformLocation(m_uProgram, "ViewProjection");
 		m_uTextureLocation = glGetUniformLocation(m_uProgram, "Tex0");
 
@@ -52,6 +53,10 @@ namespace Render{
 			auto dir = camera.Dir();
 			dir = glm::normalize(dir);
 			glUniform3fv(m_uLookLocation, 1, value_ptr(dir));
+		}
+
+		if(m_uCameraPosLocation >= 0){
+			glUniform3fv(m_uCameraPosLocation, 1, value_ptr(camera.GetPosition()));
 		}
 
 		GLUtil::CheckError();

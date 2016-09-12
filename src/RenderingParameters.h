@@ -28,6 +28,7 @@ namespace Render{
 
 		GLint m_uTransformLocation = -1;
 		GLint m_uLookLocation = -1;
+		GLint m_uCameraPosLocation = -1;
 		GLint m_uViewProjLocation = -1;
 		GLint m_uTextureLocation = -1;
 	};

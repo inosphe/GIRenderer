@@ -23,7 +23,7 @@ namespace Render{
 		IRenderingStrategy::Init();
 
 		RenderPassDeferred0* pRenderPass0 = new RenderPassDeferred0();
-		pRenderPass0->Init("shader/deferred.vert.glsl", "shader/deferred.frag.glsl");
+		pRenderPass0->Init("shader/deferred.vert.glsl", "shader/rsm.frag.glsl");
 		AddRenderPass(pRenderPass0, 0);
 
 		RenderPass* pRenderPass1 = new RenderPass();

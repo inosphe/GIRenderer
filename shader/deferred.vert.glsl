@@ -2,7 +2,6 @@
 
 uniform mat4 ViewProjection;
 uniform mat4 ObjectTransform;
-uniform vec3 Look;
 
 layout(location = 0) in vec4 vposition;
 layout(location = 1) in vec2 vtexcoord;
