@@ -6,9 +6,6 @@
 #include <util/GLUtil.h>
 #include "RenderPassDeferred0.h"
 
-constexpr int num_framebuffer = 5;
-constexpr int num_color_attachment = 4;
-
 void Render::RenderPassDeferred0::Init(const char *szVertexShader, const char *szFragShader) {
 	RenderPass::Init(szVertexShader, szFragShader);
 

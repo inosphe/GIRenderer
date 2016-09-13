@@ -7,6 +7,9 @@
 
 #include "RenderPass.h"
 
+constexpr int num_framebuffer = 5;
+constexpr int num_color_attachment = 4;
+
 namespace Render{
 	class RenderPassDeferred0 : public RenderPass {
 	public:
@@ -20,7 +23,7 @@ namespace Render{
 		void InitFramebuffer();
 
 		GLuint m_uGBuffer;
-		GLuint m_uGBufferTex[4];
+		GLuint m_uGBufferTex[num_framebuffer];
 	};
 };
 

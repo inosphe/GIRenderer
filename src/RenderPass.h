@@ -16,10 +16,13 @@ namespace Render{
 		virtual void RenderBegin();
 		virtual void RenderEnd();
 
+		inline void SetTextureNum(uint32_t nTextureNum){m_nTextureNum = nTextureNum;}
+
 		RenderingParameters& GetShader(){return *m_pParameters;}
 
 	private:
 		GLuint m_uProgram = 0;
+		uint32_t m_nTextureNum = 1;
 		RenderingParameters* m_pParameters = nullptr;
 	};
 }

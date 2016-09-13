@@ -20,6 +20,9 @@ namespace Render{
 
 		virtual void Render(const Camera& camera, std::function<void()> fRenderModels) override ;
 
+	protected:
+		void RenderToScreen(int nRenderPass, GLuint* textures, int num);
+
 	private:
 		void InitFrameBuffer();
 

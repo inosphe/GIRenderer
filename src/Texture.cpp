@@ -30,9 +30,7 @@ void Render::Texture::InitTexture(Resource::Image::PTR pImage) {
 }
 
 void Render::Texture::Bind(Render::RenderingParameters &rp, int i) const {
-	glActiveTexture(GL_TEXTURE0+i);
-	glBindTexture(GL_TEXTURE_2D, GetID());
-	rp.BindTexture(i);
+	rp.BindTexture(i, GetID());
 }
 
 void Render::Texture::Clear() {

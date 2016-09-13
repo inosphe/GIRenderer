@@ -17,6 +17,7 @@ namespace Render{
 			glLinkProgram(m_uProgram);
 
 			m_pParameters = new RenderingParameters(m_uProgram);
+			m_pParameters->SetTextureNum(m_nTextureNum);
 			m_pParameters->Init();
 		}
 		catch(const Core::Exception& ex){
