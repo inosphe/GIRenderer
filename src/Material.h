@@ -9,13 +9,14 @@
 #include <fbxsdk.h>
 #include "MaterialElement.h"
 #include <vector>
+#include "ShaderParam.h"
 
 namespace Render{
 	class Material {
 	public:
 		~Material();
 		MaterialElement& AddElement();
-		void Bind(Render::RenderingParameters& rp) const;
+		void Bind(Render::ShaderParam& shader) const;
 		void Clear();
 
 	private:

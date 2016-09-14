@@ -3,7 +3,6 @@
 //
 
 #include "IRenderingStrategy.h"
-#include "RenderingParameters.h"
 #include "RenderPass.h"
 
 namespace Render{
@@ -41,9 +40,5 @@ namespace Render{
 		else{
 			m_vecRenderPass.push_back(pRenderPass);
 		}
-	}
-
-	RenderingParameters &IRenderingStrategy::GetShader() {
-		return GetCurrentRenderPass()->GetShader();
 	}
 }

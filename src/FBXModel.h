@@ -31,7 +31,7 @@ namespace Render {
 		virtual ~FBXModel();
 
 		void UpdateForRender() override;
-		void Render(Render::RenderingParameters& rp) override;
+		void Render(Render::ShaderParam& shader) override;
 		void Clear() override;
 
 		void InitFBX(std::shared_ptr<Resource::FBX::FBXScene> pScene, Resource::ResourceManager& rm);

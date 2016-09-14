@@ -19,7 +19,7 @@ namespace Render{
 		virtual ~IMesh();
 		virtual void Init(){}
 		virtual void Clear() override;
-		virtual void Render(Render::RenderingParameters& rp) override;
+		virtual void Render(Render::ShaderParam& shader) override;
 
 		void GenerateVAO();
 		GLuint GetVAO();
@@ -35,8 +35,8 @@ namespace Render{
 		void SetDrawCount(int nSize);
 
 	protected:
-		virtual void Bind(Render::RenderingParameters& rp);
-		virtual void Draw(Render::RenderingParameters& rp);
+		virtual void Bind(Render::ShaderParam& shader);
+		virtual void Draw(Render::ShaderParam& shader);
 
 		glm::mat4x4 m_matWorldTransform;
 		Material* m_pMaterial = nullptr;

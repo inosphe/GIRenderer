@@ -39,7 +39,7 @@ namespace Core{
 		m_pWindow0->Update();
 	}
 
-	void SceneManager::Render(Render::RenderingParameters &rp) {
-		m_pScene->Render(rp);
+	void SceneManager::Render(Render::ShaderParam& shader) {
+		m_pScene->Render(shader);
 	}
 }

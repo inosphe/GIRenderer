@@ -15,9 +15,9 @@ Render::MaterialElement &Render::Material::AddElement() {
 	return *pElement;
 }
 
-void Render::Material::Bind(Render::RenderingParameters& rp) const{
+void Render::Material::Bind(Render::ShaderParam& shader) const{
 	for(const auto e : m_vecElements){
-		e->Bind(rp);
+		e->Bind(shader);
 	}
 }
 

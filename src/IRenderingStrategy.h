@@ -31,7 +31,6 @@ namespace Render{
 		inline void SetRenderPass(int i){m_nRenderPass = i;}
 		inline RenderPass* GetRenderPass(int i){return m_vecRenderPass[i];}
 		inline RenderPass* GetCurrentRenderPass(){return GetRenderPass(m_nRenderPass);}
-		RenderingParameters& GetShader();
 
 		virtual void Render(const Camera& camera, std::function<void()> fRenderModels)=0;
 	protected:

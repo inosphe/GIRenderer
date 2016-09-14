@@ -21,6 +21,6 @@ void TestScene::Update(int ms) {
 
 }
 
-void TestScene::Render(Render::RenderingParameters& rp) {
-	model.Render(rp);
+void TestScene::Render(Render::ShaderParam& shader) {
+	model.Render(shader);
 }

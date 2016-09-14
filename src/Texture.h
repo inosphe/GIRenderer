@@ -7,6 +7,7 @@
 
 #include "Image.h"
 #include <glfw/GLFW3.h>
+#include "ShaderParam.h"
 
 namespace Render{
 	class RenderingParameters;
@@ -14,15 +15,16 @@ namespace Render{
 	class Texture {
 	public:
 		Texture(Resource::Image::PTR pImage);
+		Texture();
 		virtual ~Texture();
-		void Bind(Render::RenderingParameters& rp, int i) const;
+		void Bind(Render::ShaderParam& shader, int i) const;
 		inline GLuint GetID() const {return m_uTexture;}
 		void Clear();
 
 	protected:
 		void InitTexture(Resource::Image::PTR pImage);
 
-	private:
+	protected:
 		GLuint m_uTexture = 0;
 	};
 }

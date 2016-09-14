@@ -3,7 +3,6 @@
 //
 
 #include "IModel.h"
-#include "RenderingParameters.h"
 
 namespace Render{
 	IModel::IModel()

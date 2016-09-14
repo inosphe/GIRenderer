@@ -19,7 +19,7 @@ public:
 	IScene(Core::Application& app);
 	virtual void Init(){}
 	virtual void Update(int ms);
-	virtual void Render(Render::RenderingParameters& rp);
+	virtual void Render(Render::ShaderParam& shader);
 
 	typedef std::vector<std::shared_ptr<GameObject>> container;
 

@@ -4,7 +4,6 @@
 
 #include <GL/glew.h>
 #include "IMesh.h"
-#include "RenderingParameters.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <util/GLUtil.h>
@@ -26,15 +25,15 @@ namespace Render{
 		_Clear();
 	}
 
-	void IMesh::Render(Render::RenderingParameters& rp){
-		Bind(rp);
-		Draw(rp);
+	void IMesh::Render(Render::ShaderParam& shader){
+		Bind(shader);
+		Draw(shader);
 	}
 
-	void IMesh::Bind(Render::RenderingParameters& rp) {
-		rp.SetObjectTransform(m_matWorldTransform);
+	void IMesh::Bind(Render::ShaderParam& shader) {
+		shader.BindMat4x4const(SHADER_UNIFORM_ENUM::TRANSFORM, m_matWorldTransform);
 		if(m_pMaterial)
-			m_pMaterial->Bind(rp);
+			m_pMaterial->Bind(shader);
 
 		BindVAO();
 	//	BindVertex();
@@ -44,7 +43,7 @@ namespace Render{
 
 	}
 
-	void IMesh::Draw(Render::RenderingParameters& rp) {
+	void IMesh::Draw(Render::ShaderParam& shader) {
 		if(GetIndexBuffer() == 0){
 			glDrawArrays(GL_TRIANGLES, 0, m_nDrawCount);
 		}

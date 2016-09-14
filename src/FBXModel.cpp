@@ -23,9 +23,9 @@ void Render::FBXModel::InitFBX(std::shared_ptr<Resource::FBX::FBXScene> pScene, 
 }
 
 
-void Render::FBXModel::Render(Render::RenderingParameters& rp) {
+void Render::FBXModel::Render(Render::ShaderParam& shader) {
 	if(m_pRootNode)
-		m_pRootNode->Render(rp);
+		m_pRootNode->Render(shader);
 }
 
 void Render::FBXModel::UpdateForRender() {

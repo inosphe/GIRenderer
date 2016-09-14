@@ -8,7 +8,6 @@
 #include "Camera.h"
 #include "IScene.h"
 #include <cassert>
-#include "RenderingParameters.h"
 
 namespace Render {
 	Renderer::Renderer(){

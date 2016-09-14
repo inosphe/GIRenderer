@@ -13,7 +13,7 @@ public:
 	TestScene(Core::Application& app);
 	void Init() override;
 	void Update(int ms) override;
-	void Render(Render::RenderingParameters& rp) override;
+	void Render(Render::ShaderParam& shader) override;
 
 private:
 	DummyModel model;

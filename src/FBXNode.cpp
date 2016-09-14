@@ -9,7 +9,6 @@
 #include "FBXMesh.h"
 #include "util/FBXUtil.h"
 #include "FBXMesh.h"
-#include "RenderingParameters.h"
 #include "FBXMaterial.h"
 
 Render::FBXNode::FBXNode(FbxNode *pNode, Resource::ResourceManager& rm)
@@ -95,13 +94,13 @@ void Render::FBXNode::UpdateWorldTransform(const glm::mat4x4 &matWorldTransform)
 	}
 }
 
-void Render::FBXNode::Render(Render::RenderingParameters &rp) {
+void Render::FBXNode::Render(Render::ShaderParam& shader) {
 	if(m_pMesh){
-		m_pMesh->Render(rp);
+		m_pMesh->Render(shader);
 	}
 
 	for(auto node : m_vecChildren){
-		node->Render(rp);
+		node->Render(shader);
 	}
 }
 

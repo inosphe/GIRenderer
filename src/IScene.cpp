@@ -16,8 +16,8 @@ void IScene::Update(int ms) {
 	}
 }
 
-void IScene::Render(Render::RenderingParameters &rp) {
+void IScene::Render(Render::ShaderParam& shader) {
 	for(auto model: GetObjects()){
-		model->Render(rp);
+		model->Render(shader);
 	}
 }

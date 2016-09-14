@@ -6,8 +6,8 @@
 #include "util/GLUtil.h"
 #include "Exception.h"
 #include <cassert>
-#include "RenderingParameters.h"
 #include "RenderPass.h"
+#include "Camera.h"
 
 namespace Render{
 	ForwardRenderingStrategy::ForwardRenderingStrategy()
@@ -29,8 +29,12 @@ namespace Render{
 	}
 
 	void ForwardRenderingStrategy::Render(const Camera& camera, std::function<void()> fRenderModels) {
+#define SHADER (*GetCurrentRenderPass())
+
 		RenderBegin(0);
-			GetShader().BindCamera(camera);
+			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, camera);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir());
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition());
 			fRenderModels();
 		RenderEnd();
 	}

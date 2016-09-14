@@ -10,7 +10,7 @@
 
 namespace Render{
 	class IModel;
-	class RenderingParameters;
+	class ShaderParam;
 }
 
 class GameObject : public IMovableObject{
@@ -22,7 +22,7 @@ public:
 	void SetName(const string& strName);
 	const string& GetName(){return m_strName;}
 
-	void Render(Render::RenderingParameters& rp);
+	void Render(Render::ShaderParam& shader);
 	void Update(int ms);
 
 public:

@@ -3,10 +3,13 @@
 //
 
 #include "Texture.h"
-#include "RenderingParameters.h"
 
 Render::Texture::Texture(Resource::Image::PTR pImage){
 	InitTexture(pImage);
+}
+
+Render::Texture::Texture() {
+
 }
 
 Render::Texture::~Texture() {
@@ -29,10 +32,11 @@ void Render::Texture::InitTexture(Resource::Image::PTR pImage) {
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 }
 
-void Render::Texture::Bind(Render::RenderingParameters &rp, int i) const {
-	rp.BindTexture(i, GetID());
+void Render::Texture::Bind(Render::ShaderParam& shader, int i) const {
+	shader.BindTexture(SHADER_UNIFORM_ENUM::TEX0, i, GetID());
 }
 
 void Render::Texture::Clear() {
 	glDeleteTextures(1, &m_uTexture);
 }
+

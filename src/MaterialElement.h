@@ -9,10 +9,10 @@
 #include <memory>
 #include "common_header.h"
 #include "Image.h"
+#include "ShaderParam.h"
 
 namespace Render{
 	class Texture;
-	class RenderingParameters;
 
 	class MaterialElement {
 		public:
@@ -20,7 +20,7 @@ namespace Render{
 			virtual ~MaterialElement();
 
 			void AddTexture(Resource::Image::PTR pImage);
-			void Bind(Render::RenderingParameters& rp) const;
+			void Bind(Render::ShaderParam& shader) const;
 			void Clear();
 
 		protected:

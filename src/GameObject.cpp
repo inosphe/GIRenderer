@@ -27,9 +27,9 @@ void GameObject::SetName(const string &strName) {
 	m_strName = strName;
 }
 
-void GameObject::Render(Render::RenderingParameters &rp) {
+void GameObject::Render(Render::ShaderParam& shader) {
 	if(m_pModel)
-		m_pModel->Render(rp);
+		m_pModel->Render(shader);
 }
 
 void GameObject::Update(int ms) {

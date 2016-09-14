@@ -25,7 +25,7 @@ namespace Core{
 		bool Destroy();
 
 		void Update(int ms);
-		void Render(Render::RenderingParameters& rp);
+		void Render(Render::ShaderParam& shader);
 
 	protected:
 		Application* m_pApp = nullptr;

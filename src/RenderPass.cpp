@@ -6,7 +6,8 @@
 #include <util/GLUtil.h>
 #include "RenderPass.h"
 #include "Exception.h"
-#include "RenderingParameters.h"
+#include "Camera.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Render{
 	void RenderPass::Init(const char* szVertShader, const char* szFragShader) {
@@ -16,9 +17,7 @@ namespace Render{
 			glAttachShader(m_uProgram, GLUtil::LoadShader(GL_FRAGMENT_SHADER, szFragShader));
 			glLinkProgram(m_uProgram);
 
-			m_pParameters = new RenderingParameters(m_uProgram);
-			m_pParameters->SetTextureNum(m_nTextureNum);
-			m_pParameters->Init();
+			ShaderParam::Init();
 		}
 		catch(const Core::Exception& ex){
 			assert(false);
@@ -29,10 +28,6 @@ namespace Render{
 		if(m_uProgram)
 			glDeleteProgram(m_uProgram);
 		m_uProgram = 0;
-
-		if(m_pParameters)
-			m_pParameters->Clear();
-		SAFE_DELETE(m_pParameters);
 	}
 
 	void RenderPass::RenderBegin() {
@@ -42,4 +37,5 @@ namespace Render{
 
 	void RenderPass::RenderEnd() {
 	}
+
 }

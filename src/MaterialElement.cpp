@@ -4,7 +4,6 @@
 
 #include "MaterialElement.h"
 #include "Texture.h"
-#include "RenderingParameters.h"
 
 Render::MaterialElement::MaterialElement() {
 
@@ -19,9 +18,9 @@ void Render::MaterialElement::AddTexture(Resource::Image::PTR pImage) {
 		m_vecTexture.push_back(new Texture(pImage));
 }
 
-void Render::MaterialElement::Bind(Render::RenderingParameters& rp) const {
+void Render::MaterialElement::Bind(Render::ShaderParam& shader) const {
 	for(int i=0; i<m_vecTexture.size(); ++i){
-		m_vecTexture[i]->Bind(rp, i);
+		m_vecTexture[i]->Bind(shader, i);
 	}
 }
 

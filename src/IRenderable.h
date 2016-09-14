@@ -5,11 +5,9 @@
 #ifndef PROJECT_IRENDERABLE_H
 #define PROJECT_IRENDERABLE_H
 
-#include <vector>
+#include "ShaderParam.h"
 
 namespace Render{
-	class RenderingParameters;
-
 	class IRenderable {
 	public:
 		IRenderable();
@@ -17,7 +15,7 @@ namespace Render{
 		virtual void Clear(){}
 
 		virtual void UpdateForRender(){}
-		virtual void Render(RenderingParameters& rp) = 0;
+		virtual void Render(Render::ShaderParam& shader) = 0;
 
 	};
 }

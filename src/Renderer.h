@@ -8,14 +8,13 @@
 #include <cassert>
 #include <GLFW/glfw3.h>
 #include "IRenderingStrategy.h"
-#include "RenderingParameters.h"
+#include "ShaderParam.h"
 #include <memory>
 
 class IScene;
 
 namespace Render {
 	class Camera;
-	class RenderingParameters;
 
 	class Renderer {
 	public:
@@ -34,11 +33,10 @@ namespace Render {
 		};
 
 		void Render(std::function<void()> fRenderModels);
-
+		inline ShaderParam& GetShader(){return *(ShaderParam*)m_pRenderingStrategy->GetCurrentRenderPass();}
 		void SetCamera(std::shared_ptr<Render::Camera> pCamera);
 		std::shared_ptr<Render::Camera> GetTargetCamera(){return m_pCamera;}
 		Render::Camera& GetTargetCameraRef(){return *m_pCamera.get();}
-		inline RenderingParameters& GetRenderingParameters(){return m_pRenderingStrategy->GetShader();}
 	private:
 		IRenderingStrategy* m_pRenderingStrategy = nullptr;
 		std::shared_ptr<Render::Camera> m_pCamera = nullptr;
