@@ -2,6 +2,7 @@
 // Created by inosphe on 2016. 6. 19..
 //
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <util/GLUtil.h>
 #include "RenderPass.h"
@@ -28,14 +29,31 @@ namespace Render{
 		if(m_uProgram)
 			glDeleteProgram(m_uProgram);
 		m_uProgram = 0;
+
+		if(m_pFrameBuffer){
+			m_pFrameBuffer->Clear();
+			m_pFrameBuffer = nullptr;
+		}
 	}
 
 	void RenderPass::RenderBegin() {
 		glDisable(GL_BLEND);
 		glUseProgram(m_uProgram);
+
+		if(m_pFrameBuffer){
+			m_pFrameBuffer->RenderBegin();
+		}
+		else{
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
 	}
 
 	void RenderPass::RenderEnd() {
+		if(m_pFrameBuffer){
+			m_pFrameBuffer->RenderEnd();
+		}
+		else{
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
 	}
-
 }

@@ -33,7 +33,8 @@ void Render::Texture::InitTexture(Resource::Image::PTR pImage) {
 }
 
 void Render::Texture::Bind(Render::ShaderParam& shader, int i) const {
-	shader.BindTexture(SHADER_UNIFORM_ENUM::TEX0, i, GetID());
+	int base = static_cast<int>(SHADER_UNIFORM_ENUM::TEX0);
+	shader.BindTexture(static_cast<SHADER_UNIFORM_ENUM>(base+i), GetID());
 }
 
 void Render::Texture::Clear() {

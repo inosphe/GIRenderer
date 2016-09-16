@@ -6,6 +6,7 @@
 #define PROJECT_RENDERPASS_H
 
 #include "ShaderParam.h"
+#include "FrameBuffer.h"
 
 namespace Render{
 	class RenderPass : public ShaderParam{
@@ -17,6 +18,12 @@ namespace Render{
 
 		virtual void RenderBegin();
 		virtual void RenderEnd();
+
+		inline void SetFrameBuffer(FrameBuffer* pFrameBuffer){m_pFrameBuffer = pFrameBuffer;}
+		inline FrameBuffer* GetFrameBuffer(){return m_pFrameBuffer;}
+
+	private:
+		FrameBuffer* m_pFrameBuffer = nullptr;
 	};
 }
 

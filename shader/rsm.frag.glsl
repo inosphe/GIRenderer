@@ -18,7 +18,8 @@ void main(){
 	color0 = texture(Tex0, ftexcoord);
 	normal = fnormal;
 	pos = fposition;
+	vec4 _pos = (fposition - 1.0) * 4096.0 ;
 
-    vec3 light = normalize(pos.xyz - CameraPos);
+    vec3 light = normalize(_pos.xyz - CameraPos);
 	out_light = max(dot(fnormal.xyz, -light), 0.0) * color0;
 }

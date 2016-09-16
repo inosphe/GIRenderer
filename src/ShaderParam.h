@@ -14,7 +14,7 @@
 
 namespace Render{
 	enum SHADER_UNIFORM_ENUM {
-		TRANSFORM
+		TRANSFORM = 0
 		, LOOK
 		, CAMERA_POS
 		, VIEWPROJ
@@ -26,8 +26,21 @@ namespace Render{
 		, TEX0
 		, TEX1
 		, TEX2
+		, TEX3
+		, TEX4
+		, TEX5
+		, TEX6
+		, TEX7
 		, LIGHT_VOLUME
-		, LIGHT_VOLUME_TEST
+		, LIGHT_VOLUME_R
+		, LIGHT_VOLUME_G
+		, LIGHT_VOLUME_B
+	};
+
+	struct UNIFORM_DATA {
+		std::string varName;
+		GLint loc;
+		int index;
 	};
 
 	class Camera;
@@ -39,18 +52,18 @@ namespace Render{
 
 		void Init();
 
-		void AddShaderUnfiorm(SHADER_UNIFORM_ENUM val, std::string varName);
+		void AddShaderUnfiorm(SHADER_UNIFORM_ENUM val, std::string varName, int index=0);
 
 		void BindMat4x4const(SHADER_UNIFORM_ENUM eVal, glm::mat4x4& matTransform);
 		void BindViewProj(SHADER_UNIFORM_ENUM eVal, const Camera& camera);
 		void BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v);
-		void BindTexture(SHADER_UNIFORM_ENUM eVal, int index, GLuint uTexture);
+		void BindTexture(SHADER_UNIFORM_ENUM eVal, GLuint uTexture);
 
 	protected:
 		GLuint m_uProgram = 0;
 
 	private:
-		std::map<SHADER_UNIFORM_ENUM, std::pair<std::string, GLint>> m_mapShaderUniform;
+		std::map<SHADER_UNIFORM_ENUM, UNIFORM_DATA> m_mapShaderUniform;
 	};
 }
 

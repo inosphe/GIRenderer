@@ -11,15 +11,20 @@
 
 
 namespace Render{
-	void ShaderParam::AddShaderUnfiorm(SHADER_UNIFORM_ENUM val, std::string varName) {
-		m_mapShaderUniform.insert(std::make_pair(val, std::make_pair(varName, static_cast<GLint>(-1))));
+	void ShaderParam::AddShaderUnfiorm(SHADER_UNIFORM_ENUM val, std::string varName, int index) {
+		UNIFORM_DATA data;
+		data.varName = varName;
+		data.loc = -1;
+		data.index = index;
+
+		m_mapShaderUniform.insert(std::make_pair(val, data));
 	}
 
 	void ShaderParam::BindViewProj(SHADER_UNIFORM_ENUM eVal, const Camera &camera) {
 		auto itr = m_mapShaderUniform.find(eVal);
 		if(itr != m_mapShaderUniform.end()){
 			glm::mat4 matViewProj = camera.GetViewProj();
-			GLint loc = itr->second.second;
+			GLint loc = itr->second.loc;
 			if(loc>=0)
 				glUniformMatrix4fv(loc, 1, GL_FALSE, value_ptr(matViewProj));
 		}
@@ -29,34 +34,37 @@ namespace Render{
 		auto itr = m_mapShaderUniform.find(eVal);
 		if(itr != m_mapShaderUniform.end()){
 			glm::vec3 _v = glm::normalize(v);
-			GLint loc = itr->second.second;
+			GLint loc = itr->second.loc;
 			if(loc>=0)
 				glUniform3fv(loc, 1, value_ptr(_v));
 		}
 	}
 
-	void ShaderParam::BindTexture(SHADER_UNIFORM_ENUM eVal, int index, GLuint uTexture) {
+	void ShaderParam::BindTexture(SHADER_UNIFORM_ENUM eVal, GLuint uTexture) {
 		auto itr = m_mapShaderUniform.find(eVal);
 		if(itr != m_mapShaderUniform.end()){
-			GLint loc = itr->second.second;
+			auto& data = itr->second;
+			GLint loc = data.loc;
 			if(loc >= 0){
-				glActiveTexture(GL_TEXTURE0);
+				glActiveTexture(GL_TEXTURE0+data.index);
 				glBindTexture(GL_TEXTURE_2D, uTexture);
-				glUniform1i(loc, 0);
+				glUniform1i(loc, data.index);
 			}
 		}
 	}
 
 	void ShaderParam::Init() {
 		for(auto& i : m_mapShaderUniform){
-			i.second.second = glGetUniformLocation(m_uProgram, i.second.first.c_str());
+			const std::string& str = i.second.varName;
+			GLint loc = glGetUniformLocation(m_uProgram, str.c_str());
+			i.second.loc = loc;
 		}
 	}
 
 	void ShaderParam::BindMat4x4const(SHADER_UNIFORM_ENUM eVal, glm::mat4x4 &matTransform) {
 		auto itr = m_mapShaderUniform.find(eVal);
 		if(itr != m_mapShaderUniform.end()){
-			GLint loc = itr->second.second;
+			GLint loc = itr->second.loc;
 			if(loc >= 0){
 				glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matTransform));
 			}

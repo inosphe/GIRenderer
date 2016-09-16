@@ -19,11 +19,6 @@ namespace Render{
 
 		virtual void RenderBegin() override;
 		virtual void RenderEnd() override;
-
-		void InitFramebuffer();
-
-		GLuint m_uGBuffer;
-		GLuint m_uGBufferTex[num_framebuffer];
 	};
 };
 

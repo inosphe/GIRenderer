@@ -9,8 +9,12 @@
 
 namespace Render{
 	class DummyGradientTexture : public Texture{
-		DummyGradientTexture(int type);
-		virtual ~DummyGradientTexture(){}
+	public:
+		DummyGradientTexture(int type=0);
+		virtual ~DummyGradientTexture();
+
+	private:
+		uint8_t* m_pData = nullptr;
 	};
 }
 

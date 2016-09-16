@@ -8,6 +8,7 @@
 #include "IRenderingStrategy.h"
 #include "Quad.h"
 #include "DummyModel.h"
+#include "DummyGradientTexture.h"
 
 namespace Render{
 	class DeferredRenderingStrategy : public IRenderingStrategy{
@@ -17,11 +18,10 @@ namespace Render{
 
 		void Init() override;
 
-
 		virtual void Render(const Camera& camera, std::function<void()> fRenderModels) override ;
 
 	protected:
-		void RenderToScreen(int nRenderPass, GLuint* textures, int num);
+		void RenderToScreen(GLint viewport[4], int nRenderPass, GLuint* textures, int num);
 
 	private:
 		void InitFrameBuffer();
@@ -29,6 +29,9 @@ namespace Render{
 	private:
 		Quad m_quad;
 		DummyModel m_dummy;
+
+	private:
+		DummyGradientTexture *tex_r, *tex_g, *tex_b;
 	};
 }
 

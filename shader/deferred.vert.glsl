@@ -13,8 +13,8 @@ out vec4 fnormal;
 
 void main(){
 	ftexcoord = vtexcoord;
-    gl_Position = fposition = ViewProjection * ObjectTransform * vposition;
-
-    fposition = vposition;
+	fposition = ObjectTransform * vposition;
+    gl_Position = ViewProjection * fposition;
+    fposition = fposition/4096.0 + 1.0;
 	fnormal = vec4(vnorm.xyz, 0.0);
 }
