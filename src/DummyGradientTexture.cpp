@@ -17,7 +17,7 @@ Render::DummyGradientTexture::DummyGradientTexture(int type) {
 			for(int z=0; z<size_z; ++z){
 				i = x + size_x*y + size_x*size_y*z;
 				m_pData[i] = type==0?x:type==1?y:z;
-//				m_pData[i] *= 4;
+				m_pData[i] *= 4;
 			}
 		}
 	}
