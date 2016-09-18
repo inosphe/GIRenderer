@@ -22,6 +22,6 @@ void main(){
     float r = texelFetch(LV_R, ipos, 0).r;
     float g = texelFetch(LV_G, ipos, 0).r;
     float b = texelFetch(LV_B, ipos, 0).r;
-	FragColor = vec4(r, g, b, 1.0);
+	FragColor = vec4(r, g, b*2, 1.0);
 	//FragColor = texture(LV_G, ftexcoord);
 }

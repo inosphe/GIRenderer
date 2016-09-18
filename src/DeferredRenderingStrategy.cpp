@@ -67,6 +67,7 @@ namespace Render{
 			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/unpack_pos.glsl"));
 			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/coord3Dto2D.glsl"));
 			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/lpv_inject.frag.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/sh_func.glsl"));
 			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, "Light", 0);
 			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
 			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_R, "LV_R", 2);
