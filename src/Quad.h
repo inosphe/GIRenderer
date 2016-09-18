@@ -7,9 +7,15 @@
 
 #include "IModel.h"
 
+struct QUAD_VERTEX_FORMAT{
+	float x, y, z;
+	float u, v;
+	uint8_t color[4];
+};
+
 class Quad : public Render::IModel{
 public:
-	Quad();
+	Quad(int sx=1, int sy=1);
 };
 
 
