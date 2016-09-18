@@ -13,7 +13,7 @@ constexpr int num_color_attachment = 4;
 namespace Render{
 	class RenderPassDeferred0 : public RenderPass {
 	public:
-		virtual void Init(const char *szVertexShader, const char *szFragShader) override;
+		virtual void Init(const char *szVertexShader, const char* szGeoShader, const char *szFragShader) override;
 
 		virtual void Clear() override;
 

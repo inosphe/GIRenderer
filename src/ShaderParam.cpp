@@ -53,7 +53,7 @@ namespace Render{
 		}
 	}
 
-	void ShaderParam::Init() {
+	void ShaderParam::InitVariables() {
 		for(auto& i : m_mapShaderUniform){
 			const std::string& str = i.second.varName;
 			GLint loc = glGetUniformLocation(m_uProgram, str.c_str());
@@ -69,5 +69,15 @@ namespace Render{
 				glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matTransform));
 			}
 		}
+	}
+
+	void ShaderParam::Clear() {
+		if(m_uProgram)
+			glDeleteProgram(m_uProgram);
+		m_uProgram = 0;
+	}
+
+	void ShaderParam::InitProgram() {
+		m_uProgram = glCreateProgram();
 	}
 }

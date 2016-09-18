@@ -24,7 +24,7 @@ namespace Render{
 		IRenderingStrategy::Init();
 
 		RenderPass* pRenderPass = new RenderPass();
-		pRenderPass->Init("shader/textured.vert.glsl", "shader/textured.frag.glsl");
+		pRenderPass->Init("shader/textured.vert.glsl", nullptr, "shader/textured.frag.glsl");
 		AddRenderPass(pRenderPass, 0);
 	}
 

@@ -50,7 +50,8 @@ namespace Render{
 		ShaderParam(){}
 		virtual ~ShaderParam(){}
 
-		void Init();
+		void InitProgram();
+		void InitVariables();
 
 		void AddShaderUnfiorm(SHADER_UNIFORM_ENUM val, std::string varName, int index=0);
 
@@ -59,10 +60,12 @@ namespace Render{
 		void BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v);
 		void BindTexture(SHADER_UNIFORM_ENUM eVal, GLuint uTexture);
 
-	protected:
-		GLuint m_uProgram = 0;
+		void Clear();
+
+		inline const GLuint GetProgram() const{return m_uProgram;}
 
 	private:
+		GLuint m_uProgram = 0;
 		std::map<SHADER_UNIFORM_ENUM, UNIFORM_DATA> m_mapShaderUniform;
 	};
 }

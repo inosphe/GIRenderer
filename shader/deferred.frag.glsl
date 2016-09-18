@@ -16,5 +16,5 @@ layout (location = 2) out vec4 pos; //position
 void main(){
 	color0 = texture(Tex0, ftexcoord);
 	normal = fnormal;
-	pos = fposition;
+	pos = fposition/4096.0 + 1.0;;
 }

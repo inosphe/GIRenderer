@@ -33,12 +33,19 @@ namespace Render{
 		GetCurrentRenderPass()->RenderEnd();
 	}
 
-	void IRenderingStrategy::AddRenderPass(RenderPass *pRenderPass, int i) {
-		if(i>=0){
-			m_vecRenderPass.insert(m_vecRenderPass.begin()+i, pRenderPass);
+	uint32_t IRenderingStrategy::AddRenderPass(RenderPass *pRenderPass, int at) {
+		for(uint32_t i=m_vecRenderPass.size(); i<=at; ++i){
+			m_vecRenderPass.push_back(nullptr);
+		}
+
+		if(at>=0){
+			m_vecRenderPass[at] = pRenderPass;
+			return at;
 		}
 		else{
 			m_vecRenderPass.push_back(pRenderPass);
+			return m_vecRenderPass.size()-1;
 		}
+
 	}
 }

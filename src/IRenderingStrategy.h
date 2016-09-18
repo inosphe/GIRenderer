@@ -23,7 +23,7 @@ namespace Render{
 		virtual void Init();
 		virtual void Clear();
 
-		void AddRenderPass(RenderPass* pRenderPass, int i=-1);
+		uint32_t AddRenderPass(RenderPass* pRenderPass, int at=-1);
 
 		void RenderBegin(int nRenderPass);
 		void RenderEnd();

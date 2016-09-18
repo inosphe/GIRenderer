@@ -9,9 +9,20 @@
 #include "Quad.h"
 #include "DummyModel.h"
 #include "DummyGradientTexture.h"
+#include <vector>
 
 namespace Render{
 	class DeferredRenderingStrategy : public IRenderingStrategy{
+	public:
+		enum RENDER_PASS_ENUM{
+			RSM
+			, TEST_LIGHTING
+			, LIGHT_INJECT
+			, RENDER_TO_SCREEN
+			, QUAD_TEST
+			, END
+		};
+
 	public:
 		DeferredRenderingStrategy();
 		virtual ~DeferredRenderingStrategy();
@@ -21,13 +32,15 @@ namespace Render{
 		virtual void Render(const Camera& camera, std::function<void()> fRenderModels) override ;
 
 	protected:
-		void RenderToScreen(GLint viewport[4], int nRenderPass, GLuint* textures, int num);
+		void RenderToScreen(GLint viewport[4], int nRenderPass, const GLuint* textures, int num);
+		void RenderToScreen(GLint viewport[4], int nRenderPass, const std::vector<GLuint>& vecTextures);
 
 	private:
 		void InitFrameBuffer();
 
 	private:
 		Quad m_quad;
+		Quad m_quad2;
 		DummyModel m_dummy;
 
 	private:

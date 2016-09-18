@@ -10,7 +10,7 @@
 #include "Camera.h"
 
 namespace Render{
-	DeferredRenderingStrategy::DeferredRenderingStrategy():IRenderingStrategy(){
+	DeferredRenderingStrategy::DeferredRenderingStrategy():IRenderingStrategy(), m_quad(32, 32), m_quad2(64, 64*64){
 	}
 
 	DeferredRenderingStrategy::~DeferredRenderingStrategy() {
@@ -32,32 +32,70 @@ namespace Render{
 		pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0");
 		pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::CAMERA_POS, "CameraPos");
 		pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LOOK, "Look");
-		pGPass->Init("shader/deferred.vert.glsl", "shader/rsm.frag.glsl");
+		pGPass->Init("shader/deferred.vert.glsl", nullptr, "shader/rsm.frag.glsl");
 
 		FrameBuffer* pGPassFrameBuffer = new FrameBuffer(4);
 		pGPassFrameBuffer->Init();
 		pGPass->SetFrameBuffer(pGPassFrameBuffer);
 
-		AddRenderPass(pGPass, 0);
+		AddRenderPass(pGPass, RENDER_PASS_ENUM::RSM);
 
-		RenderPass* pLightPass0 = new RenderPass();
-		pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_DIFFUSE, "Diffuse", 0);
-		pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
-		pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, "Normal", 2);
-		pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_R, "LV_R", 3);
-		pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_G, "LV_G", 4);
-		pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_B, "LV_B", 5);
-		pLightPass0->Init("shader/quad.vert.glsl", "shader/testlighting.frag.glsl");
-		AddRenderPass(pLightPass0, 1);
+		{
+			RenderPass* pLightPass0 = new RenderPass();
+			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_DIFFUSE, "Diffuse", 0);
+			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
+			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, "Normal", 2);
+			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_R, "LV_R", 3);
+			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_G, "LV_G", 4);
+			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_B, "LV_B", 5);
+			std::vector<std::pair<GLuint, std::string>> vecShader;
+			vecShader.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/quad.vert.glsl"));
+			vecShader.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/testlighting.frag.glsl"));
+			vecShader.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/unpack_pos.glsl"));
+			vecShader.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/coord3Dto2D.glsl"));
+			pLightPass0->Init(vecShader);
+			FrameBuffer* pFB = new FrameBuffer(1);
+			pFB->Init();
+			pLightPass0->SetFrameBuffer(pFB);
+			AddRenderPass(pLightPass0, RENDER_PASS_ENUM::TEST_LIGHTING);
+		}
 
-		FrameBuffer* pLVFrameBuffer = new FrameBuffer(1);
-		pLVFrameBuffer->Init();
-		pLightPass0->SetFrameBuffer(pLVFrameBuffer);
+		{
+			RenderPass* pLightInjectPass = new RenderPass();
+			std::vector<std::pair<GLuint, std::string>> vecLightInjectShaders;
+			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/lpv_inject.vert.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/unpack_pos.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/coord3Dto2D.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/lpv_inject.frag.glsl"));
+			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, "Light", 0);
+			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
+			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_R, "LV_R", 2);
+			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_G, "LV_G", 3);
+			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_B, "LV_B", 4);
+			pLightInjectPass->Init(vecLightInjectShaders);
+			FrameBuffer* pFB = new FrameBuffer(1);
+			pFB->Init();
+			pLightInjectPass->SetFrameBuffer(pFB);
+			AddRenderPass(pLightInjectPass, RENDER_PASS_ENUM::LIGHT_INJECT);
+		}
+
+		{
+			RenderPass* pRenderPass= new RenderPass();
+			std::vector<std::pair<GLuint, std::string>> vecLightInjectShaders;
+			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/quad.vert.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/quad_test.frag.glsl"));
+			pRenderPass->Init(vecLightInjectShaders);
+			FrameBuffer* pFB = new FrameBuffer(1);
+			pFB->Init();
+			pRenderPass->SetFrameBuffer(pFB);
+			AddRenderPass(pRenderPass, RENDER_PASS_ENUM::QUAD_TEST);
+		}
+
 
 		RenderPass* pScreenPass = new RenderPass();
 		pScreenPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0");
-		pScreenPass->Init("shader/quad.vert.glsl", "shader/quad.frag.glsl");
-		AddRenderPass(pScreenPass, 2);
+		pScreenPass->Init("shader/quad.vert.glsl", nullptr, "shader/quad.frag.glsl");
+		AddRenderPass(pScreenPass, RENDER_PASS_ENUM::RENDER_TO_SCREEN);
 	}
 
 	void DeferredRenderingStrategy::Render(const Camera& camera, std::function<void()> fRenderModels) {
@@ -70,15 +108,14 @@ namespace Render{
 
 #define SHADER (*GetCurrentRenderPass())
 
-		RenderBegin(0);
+		RenderBegin(RENDER_PASS_ENUM::RSM);
 			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, camera);
 			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir());
 			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition());
 			fRenderModels();
 		RenderEnd();
 
-		RenderBegin(1);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_DIFFUSE, pGPassFrameBuffer->m_uTextures[0]);
+		RenderBegin(RENDER_PASS_ENUM::TEST_LIGHTING);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, pGPassFrameBuffer->m_uTextures[1]);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, pGPassFrameBuffer->m_uTextures[2]);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_R, tex_r->GetID());
@@ -87,46 +124,61 @@ namespace Render{
 			m_quad.Render(SHADER);
 		RenderEnd();
 
+		RenderBegin(RENDER_PASS_ENUM::LIGHT_INJECT);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, pGPassFrameBuffer->m_uTextures[3]);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, pGPassFrameBuffer->m_uTextures[2]);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_R, tex_r->GetID());
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_G, tex_g->GetID());
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::LIGHT_VOLUME_B, tex_b->GetID());
 
-		GLuint nTexScreen[4] = {
-			pGPassFrameBuffer->m_uTextures[3]   //light
-			, pGPassFrameBuffer->m_uTextures[1] //normal
-			, pGPassFrameBuffer->m_uTextures[2] //pos
-//			tex_r->GetID(), tex_g->GetID(), tex_b->GetID()
-			, GetRenderPass(1)->GetFrameBuffer()->m_uTextures[0] //depth
-		};
+//			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			m_quad2.Render(SHADER);
+//			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		RenderEnd();
 
+		RenderBegin(RENDER_PASS_ENUM::QUAD_TEST);
+			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			m_quad.Render(SHADER);
+			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		RenderEnd();
 
-		RenderToScreen(viewport, 2, nTexScreen, 4);
+		std::vector<GLuint> vecTextures;
+		vecTextures.push_back(pGPassFrameBuffer->m_uTextures[3]); //light
+		vecTextures.push_back(pGPassFrameBuffer->m_uTextures[1]); //normal
+		vecTextures.push_back(pGPassFrameBuffer->m_uTextures[2]); //pos
+		vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer()->m_uTextures[0]); //depth
+		vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING)->GetFrameBuffer()->m_uTextures[0]); //depth
+		vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer()->m_uTextures[0]); //depth
 
-//		GLint viewport2[4] = {viewport[0]+viewport[2]/2, viewport[1], viewport[2]/2, viewport[3]/2};
-//		GLuint nTexScreen2[4] = {tex_r->GetID(), tex_g->GetID(), tex_b->GetID(), 0};
-//		RenderToScreen(viewport2, 2, nTexScreen2, 4);
+		RenderToScreen(viewport, RENDER_PASS_ENUM::RENDER_TO_SCREEN, vecTextures);
 
 		glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+
 	}
 
-	void DeferredRenderingStrategy::RenderToScreen(GLint viewport[4], int nRenderPass, GLuint* textures, int num) {
+	void DeferredRenderingStrategy::RenderToScreen(GLint viewport[4], int nRenderPass, const GLuint* textures, int num) {
 		int sx = viewport[0];
 		int sy = viewport[1];
 		int sw = viewport[2];
 		int sh = viewport[3];
 
-#define SHADER (*GetCurrentRenderPass())
+		int num_w = num/2.0f+0.5f;
 
 		RenderBegin(nRenderPass);
-			GLint max_num = std::min(num, 4);
-			for(int i=0; i<max_num; ++i){
-				if(textures[i] >= 0){
-					int x = sx + sw/2*(i%2);
-					int y = sy + sh/2*(i/2);
-					int w = sw/2;
-					int h = sh/2;
-					glViewport(x, y, w, h);
-					SHADER.BindTexture(SHADER_UNIFORM_ENUM::TEX0, textures[i]);
-					m_quad.Render(SHADER);
-				}
+			for(int i=0; i<num; ++i){
+				int x = sx + sw/num_w * (i%num_w);
+				int y = sy + sh/2*(i/num_w);
+				int w = sw/num_w;
+				int h = sh/2;
+				glViewport(x, y, w, h);
+				SHADER.BindTexture(SHADER_UNIFORM_ENUM::TEX0, textures[i]);
+				m_quad.Render(SHADER);
 			}
 		RenderEnd();
+
+	}
+
+	void DeferredRenderingStrategy::RenderToScreen(GLint viewport[4], int nRenderPass, const std::vector<GLuint>& vecTextures) {
+		RenderToScreen(viewport, nRenderPass, &vecTextures[0], vecTextures.size());
 	}
 }

@@ -11,14 +11,32 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Render{
-	void RenderPass::Init(const char* szVertShader, const char* szFragShader) {
+	void RenderPass::Init(const char* szVertShader, const char* szGeoShader, const char* szFragShader) {
 		try{
-			m_uProgram = glCreateProgram();
-			glAttachShader(m_uProgram, GLUtil::LoadShader(GL_VERTEX_SHADER, szVertShader));
-			glAttachShader(m_uProgram, GLUtil::LoadShader(GL_FRAGMENT_SHADER, szFragShader));
-			glLinkProgram(m_uProgram);
+			ShaderParam::InitProgram();
 
-			ShaderParam::Init();
+			LoadShader(GL_VERTEX_SHADER, szVertShader);
+			LoadShader(GL_GEOMETRY_SHADER, szGeoShader);
+			LoadShader(GL_FRAGMENT_SHADER, szFragShader);
+			glLinkProgram(GetProgram());
+
+			ShaderParam::InitVariables();
+		}
+		catch(const Core::Exception& ex){
+			assert(false);
+		}
+	}
+
+	void RenderPass::Init(const std::vector<std::pair<GLuint, std::string>>& vecShaders) {
+		try{
+			ShaderParam::InitProgram();
+
+			for(auto shader : vecShaders){
+				LoadShader(shader.first, shader.second.c_str());
+			}
+			glLinkProgram(GetProgram());
+
+			ShaderParam::InitVariables();
 		}
 		catch(const Core::Exception& ex){
 			assert(false);
@@ -26,9 +44,7 @@ namespace Render{
 	}
 
 	void RenderPass::Clear() {
-		if(m_uProgram)
-			glDeleteProgram(m_uProgram);
-		m_uProgram = 0;
+		ShaderParam::Clear();
 
 		if(m_pFrameBuffer){
 			m_pFrameBuffer->Clear();
@@ -38,7 +54,7 @@ namespace Render{
 
 	void RenderPass::RenderBegin() {
 		glDisable(GL_BLEND);
-		glUseProgram(m_uProgram);
+		glUseProgram(GetProgram());
 
 		if(m_pFrameBuffer){
 			m_pFrameBuffer->RenderBegin();
@@ -55,5 +71,10 @@ namespace Render{
 		else{
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
+	}
+
+	void RenderPass::LoadShader(GLuint type, const char *szShader) {
+		if(szShader)
+			glAttachShader(GetProgram(), GLUtil::LoadShader(type, szShader));
 	}
 }
