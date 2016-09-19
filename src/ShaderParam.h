@@ -32,9 +32,10 @@ namespace Render{
 		, TEX6
 		, TEX7
 		, LIGHT_VOLUME
-		, LIGHT_VOLUME_R
-		, LIGHT_VOLUME_G
-		, LIGHT_VOLUME_B
+		, R0 //reserved
+		, R1
+		, R2
+		, R3
 	};
 
 	struct UNIFORM_DATA {
@@ -59,6 +60,7 @@ namespace Render{
 		void BindViewProj(SHADER_UNIFORM_ENUM eVal, const Camera& camera);
 		void BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v);
 		void BindTexture(SHADER_UNIFORM_ENUM eVal, GLuint uTexture);
+		void BindTextures(SHADER_UNIFORM_ENUM eVal, GLuint* uTextures, const uint32_t numTexture);
 
 		void Clear();
 

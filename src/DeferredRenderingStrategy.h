@@ -18,6 +18,8 @@ namespace Render{
 			RSM
 			, TEST_LIGHTING
 			, LIGHT_INJECT
+			, LIGHT_PROPAGATE
+			, LIGHT_PROPAGATE2
 			, RENDER_TO_SCREEN
 			, QUAD_TEST
 			, END
@@ -32,8 +34,8 @@ namespace Render{
 		virtual void Render(const Camera& camera, std::function<void()> fRenderModels) override ;
 
 	protected:
-		void RenderToScreen(GLint viewport[4], int nRenderPass, const GLuint* textures, int num);
-		void RenderToScreen(GLint viewport[4], int nRenderPass, const std::vector<GLuint>& vecTextures);
+		void RenderToScreen(GLint viewport[4], int nRenderPass, int split_h, const GLuint* textures, int num);
+		void RenderToScreen(GLint viewport[4], int nRenderPass, int split_h, const std::vector<GLuint>& vecTextures);
 
 	private:
 		void InitFrameBuffer();
@@ -45,6 +47,7 @@ namespace Render{
 
 	private:
 		DummyGradientTexture *tex_r, *tex_g, *tex_b;
+		const int size = 64;
 	};
 }
 

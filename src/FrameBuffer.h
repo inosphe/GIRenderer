@@ -11,6 +11,7 @@
 namespace Render{
 	class FrameBuffer {
 	public:
+		FrameBuffer(int nTextureNum, int w, int h);
 		FrameBuffer(int nTextureNum);
 		virtual ~FrameBuffer();
 
@@ -22,9 +23,14 @@ namespace Render{
 
 		GLuint* m_uTextures = nullptr;
 		GLuint m_uDepthMap = 0;
+
 	private:
 		GLuint m_uGBuffer = 0;
 		int m_nTextureNum = 0;
+		int m_iW = 640;
+		int m_iH = 480;
+
+		GLint m_prev_viewport[4];
 	};
 }
 

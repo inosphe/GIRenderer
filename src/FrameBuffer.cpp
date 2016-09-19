@@ -6,8 +6,13 @@
 #include <string.h>
 #include "FrameBuffer.h"
 
+Render::FrameBuffer::FrameBuffer(int nTextureNum, int w, int h)
+:m_nTextureNum(nTextureNum), m_iW(w), m_iH(h){
+
+}
+
 Render::FrameBuffer::FrameBuffer(int nTextureNum)
-:m_nTextureNum(nTextureNum){
+		:m_nTextureNum(nTextureNum){
 
 }
 
@@ -25,14 +30,14 @@ void Render::FrameBuffer::Init() {
 	glGenTextures(m_nTextureNum, m_uTextures);
 	for(int i=0; i<m_nTextureNum; ++i){
 		glBindTexture(GL_TEXTURE_2D, m_uTextures[i]);
-		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, 640, 480);
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, m_iW, m_iH);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
 	glGenTextures(1, &m_uDepthMap);
 	glBindTexture(GL_TEXTURE_2D, m_uDepthMap);
-	glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, 640, 480);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, m_iW, m_iH);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -58,6 +63,9 @@ void Render::FrameBuffer::Clear() {
 }
 
 void Render::FrameBuffer::RenderBegin() {
+	glGetIntegerv( GL_VIEWPORT, m_prev_viewport );
+	glViewport(0, 0, m_iW, m_iH);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, m_uGBuffer);
 	GLenum drawBuffers[m_nTextureNum];
 	for(int i=0; i<m_nTextureNum; ++i)
@@ -67,5 +75,6 @@ void Render::FrameBuffer::RenderBegin() {
 }
 
 void Render::FrameBuffer::RenderEnd() {
+	glViewport(m_prev_viewport[0], m_prev_viewport[1], m_prev_viewport[2], m_prev_viewport[3]);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

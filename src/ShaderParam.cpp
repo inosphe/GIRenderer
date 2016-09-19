@@ -53,6 +53,24 @@ namespace Render{
 		}
 	}
 
+	void ShaderParam::BindTextures(SHADER_UNIFORM_ENUM eVal, GLuint *uTextures, const uint32_t numTexture) {
+		GLuint __textures[16];
+
+		auto itr = m_mapShaderUniform.find(eVal);
+		if(itr != m_mapShaderUniform.end()){
+			auto& data = itr->second;
+			GLint loc = data.loc;
+			if(loc >= 0){
+				for(int i=0; i<numTexture; ++i){
+					glActiveTexture(GL_TEXTURE0+data.index+i);
+					glBindTexture(GL_TEXTURE_2D, uTextures[i]);
+					__textures[i] = data.index+i;
+				}
+				glUniform1iv(loc, (GLsizei)numTexture, (GLint*)__textures);
+			}
+		}
+	}
+
 	void ShaderParam::InitVariables() {
 		for(auto& i : m_mapShaderUniform){
 			const std::string& str = i.second.varName;
@@ -80,4 +98,5 @@ namespace Render{
 	void ShaderParam::InitProgram() {
 		m_uProgram = glCreateProgram();
 	}
+
 }
