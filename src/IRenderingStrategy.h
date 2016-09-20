@@ -25,7 +25,7 @@ namespace Render{
 
 		uint32_t AddRenderPass(RenderPass* pRenderPass, int at=-1);
 
-		void RenderBegin(int nRenderPass);
+		void RenderBegin(int nRenderPass, int iFrameBuffer, bool bClean);
 		void RenderEnd();
 
 		inline void SetRenderPass(int i){m_nRenderPass = i;}

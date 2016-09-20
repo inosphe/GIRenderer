@@ -5,10 +5,10 @@
 #include <GL/glew.h>
 #include "DummyGradientTexture.h"
 
-Render::DummyGradientTexture::DummyGradientTexture(int type) {
-	const int size_x = 64;
-	const int size_y = 64;
-	const int size_z = 64;
+Render::DummyGradientTexture::DummyGradientTexture(int size, int type) {
+	const int size_x = size;
+	const int size_y = size;
+	const int size_z = size;
 
 	m_pData = new uint8_t[size_x*size_y*size_z];
 	int i;

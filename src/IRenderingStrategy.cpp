@@ -24,9 +24,9 @@ namespace Render{
 		m_vecRenderPass.clear();
 	}
 
-	void IRenderingStrategy::RenderBegin(int nRenderPass) {
+	void IRenderingStrategy::RenderBegin(int nRenderPass, int iFrameBuffer, bool bClean) {
 		SetRenderPass(nRenderPass);
-		GetCurrentRenderPass()->RenderBegin();
+		GetCurrentRenderPass()->RenderBegin(iFrameBuffer, bClean);
 	}
 
 	void IRenderingStrategy::RenderEnd() {

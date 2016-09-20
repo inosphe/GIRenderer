@@ -4,21 +4,22 @@ uniform sampler2D Light;
 uniform sampler2D Normal;
 uniform sampler2D Pos;
 
-in vec2 vtc;
 in vec2 ftexcoord;
+in vec4 fcolor;
 
 vec4 SH_evaluateCosineLobe_direct( in vec3 dir );
+vec4 pack(vec4 pos, float size);
+vec4 unpack(vec4 pos, float size);
 
 layout(location = 0) out vec4 LPV_out[3];
 
 void main(){
-    ivec2 ipos = ivec2(vtc.x*64, vtc.y*64);
-    vec4 normal = texture(Normal, ftexcoord);
+    vec4 normal = unpack(texture(Normal, ftexcoord), 2.0);
     vec4 SHcoeffs = SH_evaluateCosineLobe_direct( normal.xyz );
 
     vec4 light = texture(Light, ftexcoord);
 
-	LPV_out[0] = light.r * SHcoeffs;
-	LPV_out[1] = light.g * SHcoeffs;
-	LPV_out[2] = light.b * SHcoeffs;
+	LPV_out[0] = pack(light.x * SHcoeffs, 8.0);
+	LPV_out[1] = pack(light.y * SHcoeffs, 8.0);
+	LPV_out[2] = pack(light.z * SHcoeffs, 8.0);
 }

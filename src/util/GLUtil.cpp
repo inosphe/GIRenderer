@@ -31,6 +31,7 @@ namespace GLUtil{
 	GLuint LoadShader(GLuint uType, const string& strFilepath){
 		std::ifstream in(strFilepath, std::ios::ate | std::ios::binary);
 		if(!in.is_open()){
+			assert(false);
 			return false;
 		}
 		in.seekg(0, std::ios_base::end);

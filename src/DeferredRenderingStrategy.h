@@ -11,6 +11,9 @@
 #include "DummyGradientTexture.h"
 #include <vector>
 
+const int lpv_size = 32;
+const int lpv_cellsize = 64;
+
 namespace Render{
 	class DeferredRenderingStrategy : public IRenderingStrategy{
 	public:
@@ -19,9 +22,11 @@ namespace Render{
 			, TEST_LIGHTING
 			, LIGHT_INJECT
 			, LIGHT_PROPAGATE
-			, LIGHT_PROPAGATE2
 			, RENDER_TO_SCREEN
+			, POST_LPV
 			, QUAD_TEST
+			, ACCUM_LPV
+			, DOWNSAMPLE_GBUFFER
 			, END
 		};
 
@@ -30,6 +35,7 @@ namespace Render{
 		virtual ~DeferredRenderingStrategy();
 
 		void Init() override;
+		void Clear() override;
 
 		virtual void Render(const Camera& camera, std::function<void()> fRenderModels) override ;
 
@@ -47,7 +53,6 @@ namespace Render{
 
 	private:
 		DummyGradientTexture *tex_r, *tex_g, *tex_b;
-		const int size = 64;
 	};
 }
 

@@ -66,7 +66,6 @@ int main(void) {
 		glfwGetFramebufferSize(window, &w, &h);
 		while (!glfwWindowShouldClose(window)) {
 			glViewport(400, 0, w-400, h);
-			glClear(GL_COLOR_BUFFER_BIT);
 			render(window);
 			app.Update();
 			app.Render();

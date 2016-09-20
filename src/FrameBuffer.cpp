@@ -62,7 +62,7 @@ void Render::FrameBuffer::Clear() {
 	m_uDepthMap = 0;
 }
 
-void Render::FrameBuffer::RenderBegin() {
+void Render::FrameBuffer::RenderBegin(bool bClear) {
 	glGetIntegerv( GL_VIEWPORT, m_prev_viewport );
 	glViewport(0, 0, m_iW, m_iH);
 
@@ -71,10 +71,21 @@ void Render::FrameBuffer::RenderBegin() {
 	for(int i=0; i<m_nTextureNum; ++i)
 		drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
 	glDrawBuffers(m_nTextureNum, drawBuffers);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glClearColor(m_color[0], m_color[1], m_color[2], m_color[3]);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	if(bClear)
+		glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Render::FrameBuffer::RenderEnd() {
 	glViewport(m_prev_viewport[0], m_prev_viewport[1], m_prev_viewport[2], m_prev_viewport[3]);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Render::FrameBuffer::SetClearColor(float r, float g, float b, float a) {
+	m_color[0] = r;
+	m_color[1] = g;
+	m_color[2] = b;
+	m_color[3] = a;
 }

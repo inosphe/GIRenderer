@@ -31,7 +31,7 @@ namespace Render{
 	void ForwardRenderingStrategy::Render(const Camera& camera, std::function<void()> fRenderModels) {
 #define SHADER (*GetCurrentRenderPass())
 
-		RenderBegin(0);
+		RenderBegin(0, 0, true);
 			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, camera);
 			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir());
 			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition());

@@ -19,6 +19,8 @@ namespace Render{
 			LoadShader(GL_GEOMETRY_SHADER, szGeoShader);
 			LoadShader(GL_FRAGMENT_SHADER, szFragShader);
 			glLinkProgram(GetProgram());
+			glValidateProgram(GetProgram());
+			GLUtil::CheckError();
 
 			ShaderParam::InitVariables();
 		}
@@ -35,8 +37,11 @@ namespace Render{
 				LoadShader(shader.first, shader.second.c_str());
 			}
 			glLinkProgram(GetProgram());
+			glValidateProgram(GetProgram());
+			GLUtil::CheckError();
 
 			ShaderParam::InitVariables();
+
 		}
 		catch(const Core::Exception& ex){
 			assert(false);
@@ -46,27 +51,31 @@ namespace Render{
 	void RenderPass::Clear() {
 		ShaderParam::Clear();
 
-		if(m_pFrameBuffer){
-			m_pFrameBuffer->Clear();
-			m_pFrameBuffer = nullptr;
+		for(auto fb : m_vecFrameBuffers){
+			fb->Clear();
 		}
+
+		m_vecFrameBuffers.clear();
 	}
 
-	void RenderPass::RenderBegin() {
-		glDisable(GL_BLEND);
-		glUseProgram(GetProgram());
+	void RenderPass::RenderBegin(int iFrameBuffer, bool bClear) {
+		BindProgram();
 
-		if(m_pFrameBuffer){
-			m_pFrameBuffer->RenderBegin();
+		UseFrameBuffer(iFrameBuffer);
+
+		if(m_pCurFrameBuffer){
+			m_pCurFrameBuffer->RenderBegin(bClear);
 		}
 		else{
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			if(bClear)
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 	}
 
 	void RenderPass::RenderEnd() {
-		if(m_pFrameBuffer){
-			m_pFrameBuffer->RenderEnd();
+		if(m_pCurFrameBuffer){
+			m_pCurFrameBuffer->RenderEnd();
 		}
 		else{
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -76,5 +85,25 @@ namespace Render{
 	void RenderPass::LoadShader(GLuint type, const char *szShader) {
 		if(szShader)
 			glAttachShader(GetProgram(), GLUtil::LoadShader(type, szShader));
+	}
+
+	void RenderPass::SetFrameBuffer(FrameBuffer *pFrameBuffer, int at) {
+		for(int i=m_vecFrameBuffers.size(); i<=at; ++i){
+			m_vecFrameBuffers.push_back(nullptr);
+		}
+		m_vecFrameBuffers[at] = pFrameBuffer;
+	}
+
+	FrameBuffer *RenderPass::GetFrameBuffer(int at) {
+		if(at < m_vecFrameBuffers.size()){
+			return m_vecFrameBuffers[at];
+		}
+		else{
+			return nullptr;
+		}
+	}
+
+	void RenderPass::UseFrameBuffer(int at) {
+		m_pCurFrameBuffer = GetFrameBuffer(at);
 	}
 }

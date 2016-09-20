@@ -99,4 +99,21 @@ namespace Render{
 		m_uProgram = glCreateProgram();
 	}
 
+	void ShaderParam::BindInt(SHADER_UNIFORM_ENUM eVal, GLint val) {
+		auto itr = m_mapShaderUniform.find(eVal);
+		if(itr != m_mapShaderUniform.end()){
+			GLint loc = itr->second.loc;
+			if(loc >= 0){
+				glUniform1i(loc, val);
+			}
+		}
+	}
+
+	void ShaderParam::BindProgram() {
+		glUseProgram(GetProgram());
+	}
+
+	void ShaderParam::UnbindProgram() {
+		glUseProgram(0);
+	}
 }

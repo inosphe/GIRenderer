@@ -20,14 +20,18 @@ namespace Render{
 		void LoadShader(GLuint type, const char* szShader);
 		virtual void Clear();
 
-		virtual void RenderBegin();
+		virtual void RenderBegin(int iFrameBuffer, bool bClear);
 		virtual void RenderEnd();
 
-		inline void SetFrameBuffer(FrameBuffer* pFrameBuffer){m_pFrameBuffer = pFrameBuffer;}
-		inline FrameBuffer* GetFrameBuffer(){return m_pFrameBuffer;}
+		void SetFrameBuffer(FrameBuffer* pFrameBuffer, int at);
+		FrameBuffer* GetFrameBuffer(int at);
+		inline FrameBuffer* GetCurFrameBuffer(){return m_pCurFrameBuffer;}
+		void UseFrameBuffer(int at);
+		inline uint32_t FrameBufferNum(){return m_vecFrameBuffers.size();}
 
 	private:
-		FrameBuffer* m_pFrameBuffer = nullptr;
+		std::vector<FrameBuffer*> m_vecFrameBuffers;
+		FrameBuffer* m_pCurFrameBuffer = nullptr;
 	};
 }
 

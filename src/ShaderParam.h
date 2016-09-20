@@ -18,6 +18,7 @@ namespace Render{
 		, LOOK
 		, CAMERA_POS
 		, VIEWPROJ
+		, LIGHT
 		, GBUFFER_DIFFUSE
 		, GBUFFER_POS
 		, GBUFFER_NORMAL
@@ -36,6 +37,8 @@ namespace Render{
 		, R1
 		, R2
 		, R3
+		, LPV_SIZE
+		, LPV_CELL_SIZE
 	};
 
 	struct UNIFORM_DATA {
@@ -61,8 +64,12 @@ namespace Render{
 		void BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v);
 		void BindTexture(SHADER_UNIFORM_ENUM eVal, GLuint uTexture);
 		void BindTextures(SHADER_UNIFORM_ENUM eVal, GLuint* uTextures, const uint32_t numTexture);
+		void BindInt(SHADER_UNIFORM_ENUM eVal, GLint val);
 
 		void Clear();
+
+		void BindProgram();
+		void UnbindProgram();
 
 		inline const GLuint GetProgram() const{return m_uProgram;}
 

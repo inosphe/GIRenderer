@@ -15,4 +15,3 @@ void main(){
 	fcolor = vcolor;
 	gl_Position = vec4(vposition, 1.0);
 }
-

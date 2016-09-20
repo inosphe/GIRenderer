@@ -18,11 +18,15 @@ namespace Render{
 		void Init();
 		void Clear();
 
-		void RenderBegin();
+		void RenderBegin(bool bClear=true);
 		void RenderEnd();
 
 		GLuint* m_uTextures = nullptr;
 		GLuint m_uDepthMap = 0;
+
+		void SetClearColor(float r, float g, float b, float a);
+
+		float m_color[4] = {0, 0, 0, 1};
 
 	private:
 		GLuint m_uGBuffer = 0;

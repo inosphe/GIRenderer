@@ -10,7 +10,7 @@
 namespace Render{
 	class DummyGradientTexture : public Texture{
 	public:
-		DummyGradientTexture(int type=0);
+		DummyGradientTexture(int size, int type=0);
 		virtual ~DummyGradientTexture();
 
 	private:

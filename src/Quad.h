@@ -15,7 +15,7 @@ struct QUAD_VERTEX_FORMAT{
 
 class Quad : public Render::IModel{
 public:
-	Quad(int sx=1, int sy=1);
+	Quad(int sx, int sy, int tw, int th);
 };
 
 
