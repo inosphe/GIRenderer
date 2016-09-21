@@ -23,11 +23,11 @@ vec4 unpack(vec4 value, float size);
 
 void main(){
 	color0 = texture(Tex0, ftexcoord);
-	normal = pack(normalize(fnormal), 2.0);
-	//normal = pack(unpack(normal, 2.0), 2.0);
-	//normal = normalize(fnormal);
-	pos = pack(fposition, 4096.0);
 
-    vec3 light = normalize(fposition.xyz - light_pos) * light_intensity;
-	out_light = max(dot(fnormal.xyz, -light), 0.3) * color0;
+	pos = pack(fposition, 4096.0);
+	normal = pack(normalize(fnormal), 2.0);
+
+    vec3 light = normalize(fposition.xyz - light_pos);
+	out_light = max(dot(fnormal.xyz, -light), 0.3) * light_intensity * color0;
+
 }

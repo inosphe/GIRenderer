@@ -11,7 +11,7 @@ float interpolate(float v0, float v1, float t){
 	return v0 * (1-t) + v1 * t;
 }
 
-Quad::Quad(int sx, int sy, int tw, int th, bool point) {
+Quad::Quad(int sx, int sy, int tw, int th, int adjust, bool point) {
 // data for a fullscreen quad
 	const GLfloat vertexData[] = {
 			//  X     Y     Z           U     V
@@ -38,8 +38,8 @@ Quad::Quad(int sx, int sy, int tw, int th, bool point) {
 				vertices[idx].x = _x + vertexData[i*5+0]/sx;
 				vertices[idx].y = _y + vertexData[i*5+1]/sy;
 				vertices[idx].z = 0.0f;
-				vertices[idx].u = _u + vertexData[i*5+3]/sx + 0.5f/(tw);
-				vertices[idx].v = _v + vertexData[i*5+4]/sy + 0.5f/(th);
+				vertices[idx].u = _u + vertexData[i*5+3]/sx + 0.5f/(tw)*adjust;
+				vertices[idx].v = _v + vertexData[i*5+4]/sy + 0.5f/(th)*adjust;
 				vertices[idx].color[0] = 128+127.0f*x/sx;
 				vertices[idx].color[1] = 128+127.0f*y/sy;
 				vertices[idx].color[2] = 0.0f;

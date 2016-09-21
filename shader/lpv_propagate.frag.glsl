@@ -42,7 +42,6 @@ vec4 calc_sh(sampler2D lpv, vec3 coord, vec3 dir){
         float l = dot( shcoeff, dirSH );
         l = max(l, 0.0);
         return l * dirCosineLobeSH;
-        //return shcoeff * 0.2;
     }
 }
 

@@ -14,7 +14,7 @@
 #include "FrameBuffer.h"
 #include "Light.h"
 
-const int lpv_size = 48;
+const int lpv_size = 64;
 const int lpv_cellsize = 64;
 
 namespace Render{

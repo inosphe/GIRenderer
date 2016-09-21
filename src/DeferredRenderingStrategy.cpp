@@ -14,8 +14,8 @@
 namespace Render{
 	DeferredRenderingStrategy::DeferredRenderingStrategy()
 	:IRenderingStrategy()
-	, m_quad(1, 1, 640, 480, false)
-	, m_quad2(lpv_size, lpv_size*lpv_size, lpv_size, lpv_size*lpv_size, true)
+	, m_quad(1, 1, 640, 480, 0, false)
+	, m_quad2(lpv_size, lpv_size*lpv_size, lpv_size, lpv_size*lpv_size, -1, true)
 	{
 	}
 
@@ -161,7 +161,7 @@ namespace Render{
 			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/volume_coord.glsl"));
 			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/sh_func.glsl"));
 			pPropagatePass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, "LPV", 0);
-			pPropagatePass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 2);
+			pPropagatePass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 3);
 			pPropagatePass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_SIZE, "lpv_size");
 			pPropagatePass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, "lpv_cellsize");
 			pPropagatePass->Init(vecLightInjectShaders);
@@ -244,7 +244,8 @@ namespace Render{
 		for(auto light : vecLights){
 			LPVInject(dynamic_cast<Light*>(light.get()), fRenderModels);
 		}
-		LPVPropagate(3);
+		const int iteration = 2;
+		LPVPropagate(iteration);
 		LPVFinal(m_pFrameBuffer);
 
 		glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
@@ -324,20 +325,18 @@ namespace Render{
 		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderEnd();
 
 		for(int i=0; i<iteration; ++i){
-			FrameBuffer* pThisFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(i%2);
-			FrameBuffer* pNextFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer((i+1)%2);
-
-			RenderBegin(RENDER_PASS_ENUM::LIGHT_PROPAGATE, pThisFB, true);
+			RenderBegin(RENDER_PASS_ENUM::LIGHT_PROPAGATE, i%2, true);
 				SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, texLPVPropagate, 3);
 				m_quad.Render(SHADER);
 			RenderEnd();
 
 			for(int j=0; j<3; ++j){
-				texLPVPropagate[j] = pThisFB->m_uTextures[j];
+				texLPVPropagate[j] = GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(i%2)->m_uTextures[j];
 			}
 
+			FrameBuffer* pLPVAcuumNextFB = GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer((i+1)%2);
 			RenderBegin(RENDER_PASS_ENUM::ACCUM_LPV, i%2, i==0);
-				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, pNextFB->m_uTextures, 3);
+				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, pLPVAcuumNextFB->m_uTextures, 3);
 				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX1, texLPVPropagate, 3);
 				m_quad.Render(SHADER);
 			RenderEnd();
@@ -389,13 +388,17 @@ namespace Render{
 		if(m_pFrameBuffer)
 			vecTextures.push_back(m_pFrameBuffer->m_uTextures[0]);
 
-		vecTextures.push_back(pGStageFB->m_uTextures[0]);
+		vecTextures.push_back(pGStageFB->m_uTextures[0]); //diffuse
+//		vecTextures.push_back(pGStageFB->m_uTextures[1]); //normal
 		vecTextures.push_back(pGStageFB->m_uTextures[2]); //pos
+		vecTextures.push_back(pGStageFB->m_uTextures[3]);
 		vecTextures.push_back(pLightGStageFB->m_uTextures[3]);
 		for(int i=0; i<3; ++i){
 			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
-//			vecTextures.push_back(tex_gradient[i]);
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0)->m_uTextures[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(0)->m_uTextures[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(1)->m_uTextures[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->m_uTextures[i]);
 		}
 		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer(0)->m_uTextures[0]);
 		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING)->GetFrameBuffer(0)->m_uTextures[0]); //depth
@@ -405,6 +408,12 @@ namespace Render{
 
 		RenderTexToScreen(viewport, RENDER_PASS_ENUM::RENDER_TO_SCREEN, 3, vecTextures);
 	}
+
+
+
+
+
+
 
 	void DeferredRenderingStrategy::RenderGStage(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels) {
 		const unsigned long MAX_LIGHT_COUNT = 1;

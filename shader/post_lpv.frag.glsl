@@ -26,25 +26,43 @@ ivec3 directions[6] = ivec3[](
     , ivec3(0, 0, -1)
 );
 
-float calcFinalColor(sampler2D lpv, ivec2 coord, vec3 dir){
+float calcFinalColorComponent(sampler2D lpv, ivec2 coord, vec3 dir){
     return dot(unpack(texelFetch(lpv, coord, 0), 8.0), SH_evaluate(dir));
 }
 
+vec3 calcFinalColor(vec4 pos, vec3 normal){
+    ivec2 ipos = coord3Dto2D(pos, lpv_size, lpv_cellsize);
+    float r = calcFinalColorComponent(LPV[0], ipos, -normal);
+    float g = calcFinalColorComponent(LPV[1], ipos, -normal);
+    float b = calcFinalColorComponent(LPV[2], ipos, -normal);
+    return vec3(r, g, b);
+}
+
 void main(){
-    vec4 color = texture(Light, ftexcoord);
     vec3 normal = unpack(texture(Normal, ftexcoord), 2.0).xyz;
 
     vec4 pos = unpack(texture(Pos, ftexcoord), 4096.0);
-    ivec2 ipos = coord3Dto2D(pos, lpv_size, lpv_cellsize);
 
-    float r = calcFinalColor(LPV[0], ipos, -normal);
-    float g = calcFinalColor(LPV[1], ipos, -normal);
-    float b = calcFinalColor(LPV[2], ipos, -normal);
+    vec3 color = calcFinalColor(pos, normal);
+    float t[6];
+    t[0] = fract(pos.x/lpv_cellsize);
+    t[1] = 1-fract(pos.x/lpv_cellsize);
+    t[2] = fract(pos.y/lpv_cellsize);
+    t[3] = 1-fract(pos.y/lpv_cellsize);
+    t[4] = fract(pos.z/lpv_cellsize);
+    t[5] = 1-fract(pos.z/lpv_cellsize);
+    for(int i=0; i<6; ++i){
+        color = color + calcFinalColor(pos+vec4(directions[i]*lpv_cellsize,0), normal) * t[i];
+    }
+    color /= 4.0;
 
-    r = max(r, 0);
-    g = max(g, 0);
-    b = max(b, 0);
 
-    FragColor = vec4(r, g, b, 1.0)*10;
-    //FragColor = texture(Light, ftexcoord) + vec4(r, g, b, 1.0)*4;
+    color[0] = max(color[0], 0);
+    color[1] = max(color[1], 0);
+    color[2] = max(color[2], 0);
+
+    vec4 color4 = vec4(color, 0.0);
+
+    //FragColor = color4*10;
+    FragColor = texture(Light, ftexcoord) + color4;
 }

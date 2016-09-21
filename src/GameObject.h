@@ -32,7 +32,7 @@ public:
 	const string& GetName(){return m_strName;}
 
 	void Render(Render::ShaderParam& shader);
-	void Update(int ms);
+	virtual void Update(int ms);
 
 	inline void SetType(Type type){m_eType = type;}
 	inline Type GetType(){return m_eType;}

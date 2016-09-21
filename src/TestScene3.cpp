@@ -29,7 +29,7 @@ void TestScene3::Init() {
 	auto light = new Light();
 	light->SetPosition(glm::vec3(-202, 1123, -54.2));
 	light->SetDirection(glm::vec3(-0.5, -1, 0));
-	light->SetIntensity(5.0);
+	light->SetIntensity(2.0);
 	AddGameObject(std::shared_ptr<GameObject>(light));
 }
 
