@@ -37,10 +37,14 @@ void main(){
     vec4 pos = unpack(texture(Pos, ftexcoord), 4096.0);
     ivec2 ipos = coord3Dto2D(pos, lpv_size, lpv_cellsize);
 
-    float r = calcFinalColor(LPV[0], ipos, normal);
-    float g = calcFinalColor(LPV[1], ipos, normal);
-    float b = calcFinalColor(LPV[2], ipos, normal);
+    float r = calcFinalColor(LPV[0], ipos, -normal);
+    float g = calcFinalColor(LPV[1], ipos, -normal);
+    float b = calcFinalColor(LPV[2], ipos, -normal);
 
-    FragColor = vec4(r, g, b, 1.0)*2;
-    //FragColor = texture(Light, ftexcoord) + vec4(r, g, b, 1.0);
+    r = max(r, 0);
+    g = max(g, 0);
+    b = max(b, 0);
+
+    FragColor = vec4(r, g, b, 1.0)*10;
+    //FragColor = texture(Light, ftexcoord) + vec4(r, g, b, 1.0)*4;
 }

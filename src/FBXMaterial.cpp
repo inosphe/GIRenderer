@@ -25,7 +25,7 @@ Resource::FBX::FBXMaterial::~FBXMaterial() {
 }
 
 void Resource::FBX::FBXMaterial::InitMaterial(const FbxSurfaceMaterial *pFbxMaterial, Resource::ResourceManager& rm) {
-	Logger::Debug(pFbxMaterial->GetName());
+//	Logger::Debug(pFbxMaterial->GetName());
 
 	Render::MaterialElement& material = AddElement();
 

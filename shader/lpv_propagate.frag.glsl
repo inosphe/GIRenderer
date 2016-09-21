@@ -1,7 +1,6 @@
 #version 330
 
 uniform sampler2D LPV[3];
-uniform sampler2D Pos;
 
 uniform int lpv_size;
 uniform int lpv_cellsize;
@@ -39,9 +38,12 @@ vec4 calc_sh(sampler2D lpv, vec3 coord, vec3 dir){
         return vec4(0);
     else if((c2.y < 0) || (c2.y >= lpv_size*lpv_size))
         return vec4(0);
-    else
+    else{
+        float l = dot( shcoeff, dirSH );
+        l = max(l, 0.0);
+        return l * dirCosineLobeSH;
         //return shcoeff * 0.2;
-        return max(dot( shcoeff, dirSH ), 0.0) * dirCosineLobeSH;
+    }
 }
 
 void main(){
@@ -51,14 +53,15 @@ void main(){
 
     for(int i=0; i<6; ++i){
         ivec3 dir = directions[i];
-        ivec3 neighbor_cell_idx = cell_idx.xyz+dir;
+        ivec3 neighbor_cell_idx = cell_idx.xyz-dir;
 
         for(int j=0; j<3; ++j){
-            shcoeff_accum[j] += calc_sh(LPV[j], neighbor_cell_idx, -dir);
+            shcoeff_accum[j] += calc_sh(LPV[j], neighbor_cell_idx, dir);
         }
     }
 
     for(int i=0; i<3; ++i){
         LPV_out[i] = pack(shcoeff_accum[i], 8.0);
+        //LPV_out[i] = texelFetch(LPV[i], coord3Dto2D(cell_idx, lpv_size, 1), 0);
     }
 }

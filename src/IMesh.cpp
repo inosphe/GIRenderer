@@ -45,11 +45,13 @@ namespace Render{
 
 	void IMesh::Draw(Render::ShaderParam& shader) {
 		if(GetIndexBuffer() == 0){
-			glDrawArrays(GL_TRIANGLES, 0, m_nDrawCount);
+			glDrawArrays(m_eDrawMode, 0, m_nDrawCount);
 		}
 		else{
-			glDrawElements(GL_TRIANGLES, m_nDrawCount, GL_UNSIGNED_INT, 0);
+			glDrawElements(m_eDrawMode, m_nDrawCount, GL_UNSIGNED_INT, 0);
 		}
+
+		GLUtil::CheckError();
 	}
 
 	void IMesh::GenerateVAO() {

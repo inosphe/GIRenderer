@@ -3,9 +3,13 @@
 uniform sampler2D Light;
 uniform sampler2D Normal;
 uniform sampler2D Pos;
+uniform sampler2D Gradient[3];
+
+uniform int lpv_size;
 
 in vec2 ftexcoord;
 in vec4 fcolor;
+in vec2 vtc;
 
 vec4 SH_evaluateCosineLobe_direct( in vec3 dir );
 vec4 pack(vec4 pos, float size);
@@ -22,4 +26,9 @@ void main(){
 	LPV_out[0] = pack(light.x * SHcoeffs, 8.0);
 	LPV_out[1] = pack(light.y * SHcoeffs, 8.0);
 	LPV_out[2] = pack(light.z * SHcoeffs, 8.0);
+
+	//for(int i=0; i<3; ++i)
+	    //LPV_out[i] = vec4(1.0);
+	    //LPV_out[i] = fcolor;
+    	//LPV_out[i] = texelFetch(Gradient[i], ivec2(vtc.x * lpv_size, vtc.y * lpv_size*lpv_size), 0);
 }

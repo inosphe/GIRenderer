@@ -10,6 +10,7 @@
 #include "DummyModel.h"
 #include "DummyGradientTexture.h"
 #include <vector>
+#include "Camera.h"
 
 const int lpv_size = 32;
 const int lpv_cellsize = 64;
@@ -18,7 +19,8 @@ namespace Render{
 	class DeferredRenderingStrategy : public IRenderingStrategy{
 	public:
 		enum RENDER_PASS_ENUM{
-			RSM
+			MAIN_GBUFFER
+			, LIGHT_GBUFFER
 			, TEST_LIGHTING
 			, LIGHT_INJECT
 			, LIGHT_PROPAGATE
@@ -50,6 +52,8 @@ namespace Render{
 		Quad m_quad;
 		Quad m_quad2;
 		DummyModel m_dummy;
+
+		Camera light;
 
 	private:
 		DummyGradientTexture *tex_r, *tex_g, *tex_b;

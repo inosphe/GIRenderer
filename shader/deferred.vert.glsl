@@ -15,5 +15,9 @@ void main(){
 	ftexcoord = vtexcoord;
 	fposition = ObjectTransform * vposition;
     gl_Position = ViewProjection * fposition;
-	fnormal = vec4(vnorm.xyz, 0.0);
+
+    vec3 normal = mat3(transpose(inverse(ObjectTransform))) * vnorm.xyz;
+    //vec3 normal = vnorm;
+
+	fnormal = vec4(normal, 0.0);
 }

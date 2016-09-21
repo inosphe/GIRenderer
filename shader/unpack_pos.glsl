@@ -2,7 +2,6 @@
 
 vec4 unpack(vec4 pos, float size){
 	vec4 _pos = (pos-0.5)*size;
-	_pos.w = 1.0;
 	return _pos;
 }
 

@@ -34,6 +34,8 @@ namespace Render{
 
 		void SetDrawCount(int nSize);
 
+		inline void SetDrawMode(GLuint mode){m_eDrawMode = mode;}
+
 	protected:
 		virtual void Bind(Render::ShaderParam& shader);
 		virtual void Draw(Render::ShaderParam& shader);
@@ -49,6 +51,7 @@ namespace Render{
 		GLuint m_iVextexBuffer = 0;
 		GLuint m_iIndexBuffer = 0;
 		int m_nDrawCount = 0;
+		GLuint m_eDrawMode = GL_TRIANGLES;
 	};
 }
 

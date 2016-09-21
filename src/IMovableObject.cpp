@@ -84,8 +84,8 @@ void IMovableObject::SetDirection(const glm::vec3 &dir) {
 	a = ZAXIS;
 	b = glm::normalize(dir);
 	glm::vec3 axis = glm::cross(a, b);
-	float rad = glm::dot(a, b);
-	m_qRotation = glm::angleAxis(rad, axis);
+	float rad = glm::acos(glm::dot(a, b));
+	m_qRotation = glm::angleAxis(-rad, axis);
 }
 
 glm::vec3 IMovableObject::GetEuler() {

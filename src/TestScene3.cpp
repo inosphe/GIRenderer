@@ -21,6 +21,8 @@ void TestScene3::Init() {
 
 	m_pMainCamera = std::shared_ptr<Render::Camera>(new Render::Camera());
 	m_pMainCamera->Init();
+	m_pMainCamera->SetPosition(glm::vec3(-202, 1123, -54.2));
+	m_pMainCamera->SetDirection(glm::vec3(-0.5, -1, 0));
 	m_app.SetCamera(m_pMainCamera);
 	m_gameObjects.push_back(std::shared_ptr<GameObject>(m_pMainCamera));
 

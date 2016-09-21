@@ -36,5 +36,4 @@ namespace Render{
 
 		return ViewProjection;
 	}
-
 }

@@ -21,6 +21,7 @@ void main(){
 	float hy = lpv_size*lpv_size;
 
 	ftexcoord = vtexcoord;
+	fcolor = color;
 
 	vec4 pos = unpack(texture(Pos, ftexcoord), 4096.0);
 	ivec2 ipos = coord3Dto2D(pos, lpv_size, lpv_cellsize);
@@ -28,7 +29,5 @@ void main(){
 
 	pos = vec4((ipos.x/hx-0.5)*2, (ipos.y/hy-0.5)*2, 0, 1.0);
 	gl_Position = pos;
-
-	fcolor = color;
 }
 
