@@ -26,6 +26,7 @@ namespace Core{
 
 		void Update(int ms);
 		void Render(Render::ShaderParam& shader);
+		inline IScene* GetScene(){return m_pScene;}
 
 	protected:
 		Application* m_pApp = nullptr;

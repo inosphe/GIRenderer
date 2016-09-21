@@ -15,8 +15,17 @@ namespace Render{
 
 class GameObject : public IMovableObject{
 public:
+	enum Type{
+		Camera = 0
+		, Light
+		, Entity
+	};
+	typedef std::shared_ptr<GameObject> PTR;
+
+public:
 	GameObject();
-	GameObject(Render::IModel* pModel);
+	GameObject(Type type);
+	GameObject(Type type, Render::IModel* pModel);
 	virtual ~GameObject();
 
 	void SetName(const string& strName);
@@ -25,12 +34,18 @@ public:
 	void Render(Render::ShaderParam& shader);
 	void Update(int ms);
 
+	inline void SetType(Type type){m_eType = type;}
+	inline Type GetType(){return m_eType;}
+
+	const glm::mat4 GetViewProj() const;
+
 public:
 	const unsigned int m_ID = 0;
 
 protected:
 	Render::IModel* m_pModel = nullptr;
 	string m_strName;
+	Type m_eType;
 
 public:
 	static int Counter;

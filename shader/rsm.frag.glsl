@@ -9,6 +9,10 @@ in vec4 fnormal;
 uniform vec3 CameraPos;
 uniform vec3 Look;
 
+uniform vec3 light_pos = vec3(30, 0, 0);
+uniform vec3 light_dir = vec3(-0.5, -1, 0);
+uniform float light_intensity = 0.0;
+
 layout (location = 0) out vec4 color0; //color
 layout (location = 1) out vec4 normal; //normal
 layout (location = 2) out vec4 pos; //position
@@ -24,8 +28,6 @@ void main(){
 	//normal = normalize(fnormal);
 	pos = pack(fposition, 4096.0);
 
-    //vec3 light = normalize(fposition.xyz - CameraPos);
-    vec3 light_pos = vec3(30, 0, 0);
-    vec3 light = normalize(fposition.xyz - light_pos) * 2;
+    vec3 light = normalize(fposition.xyz - light_pos) * light_intensity;
 	out_light = max(dot(fnormal.xyz, -light), 0.3) * color0;
 }

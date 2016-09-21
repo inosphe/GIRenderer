@@ -16,7 +16,7 @@ namespace Render{
 
 		void Init() override;
 
-		virtual void Render(const Camera& camera, std::function<void()> fRenderModels) override;
+		virtual void Render(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels) override;
 
 	private:
 

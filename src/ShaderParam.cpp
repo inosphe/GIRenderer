@@ -20,7 +20,7 @@ namespace Render{
 		m_mapShaderUniform.insert(std::make_pair(val, data));
 	}
 
-	void ShaderParam::BindViewProj(SHADER_UNIFORM_ENUM eVal, const Camera &camera) {
+	void ShaderParam::BindViewProj(SHADER_UNIFORM_ENUM eVal, const GameObject &camera) {
 		auto itr = m_mapShaderUniform.find(eVal);
 		if(itr != m_mapShaderUniform.end()){
 			glm::mat4 matViewProj = camera.GetViewProj();
@@ -105,6 +105,16 @@ namespace Render{
 			GLint loc = itr->second.loc;
 			if(loc >= 0){
 				glUniform1i(loc, val);
+			}
+		}
+	}
+
+	void ShaderParam::BindFloat(SHADER_UNIFORM_ENUM eVal, GLfloat val) {
+		auto itr = m_mapShaderUniform.find(eVal);
+		if(itr != m_mapShaderUniform.end()){
+			GLint loc = itr->second.loc;
+			if(loc >= 0){
+				glUniform1f(loc, val);
 			}
 		}
 	}

@@ -7,6 +7,8 @@
 
 #include <GLFW/glfw3.h>
 #include "common_header.h"
+#include "GameObject.h"
+#include "FrameBuffer.h"
 #include <vector>
 #include <functional>
 
@@ -26,13 +28,14 @@ namespace Render{
 		uint32_t AddRenderPass(RenderPass* pRenderPass, int at=-1);
 
 		void RenderBegin(int nRenderPass, int iFrameBuffer, bool bClean);
+		void RenderBegin(int nRenderPass, FrameBuffer* pFrameBuffer, bool bClean);
 		void RenderEnd();
 
 		inline void SetRenderPass(int i){m_nRenderPass = i;}
 		inline RenderPass* GetRenderPass(int i){return m_vecRenderPass[i];}
 		inline RenderPass* GetCurrentRenderPass(){return GetRenderPass(m_nRenderPass);}
 
-		virtual void Render(const Camera& camera, std::function<void()> fRenderModels)=0;
+		virtual void Render(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels)=0;
 	protected:
 		int m_nRenderPass = 0;
 		std::vector<RenderPass*> m_vecRenderPass;

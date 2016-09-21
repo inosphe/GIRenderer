@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 #include "IRenderingStrategy.h"
 #include "ShaderParam.h"
+#include "GameObject.h"
 #include <memory>
 
 class IScene;
@@ -37,10 +38,12 @@ namespace Render {
 		void SetCamera(std::shared_ptr<Render::Camera> pCamera);
 		std::shared_ptr<Render::Camera> GetTargetCamera(){return m_pCamera;}
 		Render::Camera& GetTargetCameraRef(){return *m_pCamera.get();}
+		inline void SetLights(const std::vector<GameObject::PTR>& lights){m_vecLights = lights;}
 	private:
 		IRenderingStrategy* m_pRenderingStrategy = nullptr;
 		std::shared_ptr<Render::Camera> m_pCamera = nullptr;
 
+		std::vector<GameObject::PTR> m_vecLights;
 	};
 };
 

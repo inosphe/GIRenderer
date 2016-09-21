@@ -7,6 +7,9 @@
 #include "util/GLUtil.h"
 #include "Exception.h"
 #include "RenderPassDeferred0.h"
+#include "Light.h"
+
+#define SHADER (*GetCurrentRenderPass())
 
 namespace Render{
 	DeferredRenderingStrategy::DeferredRenderingStrategy()
@@ -20,6 +23,7 @@ namespace Render{
 		SAFE_DELETE(tex_r);
 		SAFE_DELETE(tex_g);
 		SAFE_DELETE(tex_b);
+		SAFE_DELETE(m_pFrameBuffer);
 	}
 
 	void DeferredRenderingStrategy::Init() {
@@ -29,8 +33,8 @@ namespace Render{
 		tex_g = new DummyGradientTexture(lpv_size, 1);
 		tex_b = new DummyGradientTexture(lpv_size, 2);
 
-		light.SetPosition(glm::vec3(-200, 1100, -54.2));
-		light.SetDirection(glm::vec3(-0.5, -1, 0));
+		m_pFrameBuffer = new FrameBuffer(1);
+		m_pFrameBuffer->Init();
 
 		//Main Gbuffer
 		{
@@ -40,6 +44,9 @@ namespace Render{
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::CAMERA_POS, "CameraPos");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LOOK, "Look");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_POS, "light_pos");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_DIR, "light_dir");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, "light_intensity");
 			std::vector<std::pair<GLuint, std::string>> vecShaders;
 			vecShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/deferred.vert.glsl"));
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/rsm.frag.glsl"));
@@ -61,6 +68,9 @@ namespace Render{
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::CAMERA_POS, "CameraPos");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LOOK, "Look");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_POS, "light_pos");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_DIR, "light_dir");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, "light_intensity");
 			std::vector<std::pair<GLuint, std::string>> vecShaders;
 			vecShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/deferred.vert.glsl"));
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/rsm.frag.glsl"));
@@ -124,7 +134,6 @@ namespace Render{
 			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, "Light", 0);
 			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
 			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, "Normal", 2);
-			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::R0, "Gradient", 3);
 			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_SIZE, "lpv_size");
 			pLightInjectPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, "lpv_cellsize");
 			pLightInjectPass->Init(vecLightInjectShaders);
@@ -206,7 +215,7 @@ namespace Render{
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/volume_coord.glsl"));
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/unpack_pos.glsl"));
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/sh_func.glsl"));
-			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT, "Light", 0);
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, "Light", 0);
 			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
 			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, "Normal", 2);
 			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, "LPV", 3);
@@ -216,9 +225,6 @@ namespace Render{
 			pRenderPass->BindProgram();
 			pRenderPass->BindInt(SHADER_UNIFORM_ENUM::LPV_SIZE, lpv_size);
 			pRenderPass->BindInt(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, lpv_cellsize);
-			FrameBuffer* pFB = new FrameBuffer(1);
-			pFB->Init();
-			pRenderPass->SetFrameBuffer(pFB, 0);
 			AddRenderPass(pRenderPass, RENDER_PASS_ENUM::POST_LPV);
 		}
 
@@ -228,143 +234,26 @@ namespace Render{
 		AddRenderPass(pScreenPass, RENDER_PASS_ENUM::RENDER_TO_SCREEN);
 	}
 
-	void DeferredRenderingStrategy::Render(const Camera& camera, std::function<void()> fRenderModels) {
+	void DeferredRenderingStrategy::Render(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels) {
 		glDisable(GL_BLEND);
-
-#define GBUFFER GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0)
-#define LIGHT_GBUFFER(i) GetRenderPass(RENDER_PASS_ENUM::LIGHT_GBUFFER)->GetFrameBuffer(i)
 
 		GLint viewport[4];
 		glGetIntegerv( GL_VIEWPORT, viewport );
-		glViewport(0, 0, 640, 480);
 
-#define SHADER (*GetCurrentRenderPass())
-
-		RenderBegin(RENDER_PASS_ENUM::MAIN_GBUFFER, 0, true);
-			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, camera);
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir());
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition());
-			fRenderModels();
-		RenderEnd();
-
-		RenderBegin(RENDER_PASS_ENUM::LIGHT_GBUFFER, 0, true);
-			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, light);
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, light.Dir());
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, light.GetPosition());
-			fRenderModels();
-		RenderEnd();
-
-		RenderBegin(RENDER_PASS_ENUM::DOWNSAMPLE_GBUFFER, 0, true);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::TEX0, LIGHT_GBUFFER(0)->m_uTextures[2]);
-//			SHADER.BindTexture(SHADER_UNIFORM_ENUM::TEX0, GBUFFER->m_uTextures[2]);
-			m_quad.Render(SHADER);
-		RenderEnd();
-
-		GLuint tex_gradient[] = {tex_r->GetID(), tex_g->GetID(), tex_b->GetID()};
-
-		RenderBegin(RENDER_PASS_ENUM::TEST_LIGHTING, 0, true);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, GBUFFER->m_uTextures[1]);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, GBUFFER->m_uTextures[2]);
-			SHADER.BindTextures(SHADER_UNIFORM_ENUM::R0, tex_gradient, 3);
-			m_quad.Render(SHADER);
-		RenderEnd();
-
-		RenderBegin(RENDER_PASS_ENUM::LIGHT_INJECT, 0, true);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, LIGHT_GBUFFER(0)->m_uTextures[3]);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, LIGHT_GBUFFER(0)->m_uTextures[1]);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, GetRenderPass(RENDER_PASS_ENUM::DOWNSAMPLE_GBUFFER)->GetFrameBuffer(0)->m_uTextures[0]);
-//			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, GBUFFER->m_uTextures[3]);
-//			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, GBUFFER->m_uTextures[1]);
-//			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, GetRenderPass(RENDER_PASS_ENUM::DOWNSAMPLE_GBUFFER)->GetFrameBuffer(0)->m_uTextures[0]);
-			SHADER.BindTextures(SHADER_UNIFORM_ENUM::R0, tex_gradient, 3);
-
-//			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-			m_quad2.Render(SHADER);
-//			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		RenderEnd();
-
-//		RenderBegin(RENDER_PASS_ENUM::ACCUM_LPV, true);
-////			glEnable(GL_BLEND);
-////			glBlendFunc(GL_ONE, GL_ONE);
-//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer()->m_uTextures, 3);
-//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX1, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer()->m_uTextures, 3);
-//			m_quad.Render(SHADER);
-////			glDisable(GL_BLEND);
-//		RenderEnd();
-
-
-		RenderPass* pLightInjectPass = GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT);
-		FrameBuffer* pLightInjectFB = pLightInjectPass->GetFrameBuffer(0);
-		GLuint tex_light_propagate_lpv[] = {
-				pLightInjectFB->m_uTextures[0]
-				, pLightInjectFB->m_uTextures[1]
-				, pLightInjectFB->m_uTextures[2]
-		};
-
-		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderBegin(true);
-		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderEnd();
-		const int iteration = 3;
-		for(int i=0; i<iteration; ++i){
-			RenderBegin(RENDER_PASS_ENUM::LIGHT_PROPAGATE, i%2, true);
-				SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, tex_light_propagate_lpv, 3);
-				m_quad.Render(SHADER);
-			RenderEnd();
-
-			for(int j=0; j<3; ++j){
-				tex_light_propagate_lpv[j] = GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(i%2)->m_uTextures[j];
-			}
-
-			RenderBegin(RENDER_PASS_ENUM::ACCUM_LPV, i%2, i==0);
-				//glEnable(GL_BLEND);
-				//glBlendFunc(GL_ONE, GL_ONE);
-				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer((i+1)%2)->m_uTextures, 3);
-				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX1, tex_light_propagate_lpv, 3);
-				m_quad.Render(SHADER);
-				//glDisable(GL_BLEND);
-			RenderEnd();
-
+		RenderGStage(camera, vecLights, fRenderModels);
+		for(auto light : vecLights){
+			LPVInject(dynamic_cast<Light*>(light.get()), fRenderModels);
 		}
-
-		RenderBegin(RENDER_PASS_ENUM::QUAD_TEST, 0, true);
-//			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-			m_quad2.Render(SHADER);
-//			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		RenderEnd();
-
-
-		RenderBegin(RENDER_PASS_ENUM::POST_LPV, 0, true);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::LIGHT, GBUFFER->m_uTextures[3]);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, GBUFFER->m_uTextures[2]);
-			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, GBUFFER->m_uTextures[1]);
-			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures, 3);
-//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
-
-			m_quad.Render(SHADER);
-		RenderEnd();
-
-		std::vector<GLuint> vecTextures;
-		vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::POST_LPV)->GetFrameBuffer(0)->m_uTextures[0]);
-
-		vecTextures.push_back(GBUFFER->m_uTextures[0]);
-		vecTextures.push_back(GBUFFER->m_uTextures[2]); //pos
-		vecTextures.push_back(LIGHT_GBUFFER(0)->m_uTextures[3]);
-		for(int i=0; i<3; ++i){
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
-//			vecTextures.push_back(tex_gradient[i]);
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures[i]);
-		}
-		vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer(0)->m_uTextures[0]);
-		vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING)->GetFrameBuffer(0)->m_uTextures[0]); //depth
-		vecTextures.push_back(GBUFFER->m_uTextures[1]);
-		vecTextures.push_back(GBUFFER->m_uTextures[3]);
-
-		RenderToScreen(viewport, RENDER_PASS_ENUM::RENDER_TO_SCREEN, 3, vecTextures);
+		LPVPropagate(3);
+		LPVFinal(m_pFrameBuffer);
 
 		glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
+		if(m_pFrameBuffer)
+			RenderScreen();
 	}
 
-	void DeferredRenderingStrategy::RenderToScreen(GLint viewport[4], int nRenderPass, int split_h, const GLuint* textures, int num) {
+	void DeferredRenderingStrategy::RenderTexToScreen(GLint viewport[4], int nRenderPass, int split_h, const GLuint* textures, int num) {
 		int sx = viewport[0];
 		int sy = viewport[1];
 		int sw = viewport[2];
@@ -383,16 +272,154 @@ namespace Render{
 				m_quad.Render(SHADER);
 			}
 		RenderEnd();
-
 	}
 
-	void DeferredRenderingStrategy::RenderToScreen(GLint viewport[4], int nRenderPass, int split_h, const std::vector<GLuint>& vecTextures) {
-		RenderToScreen(viewport, nRenderPass, split_h, &vecTextures[0], vecTextures.size());
+	void DeferredRenderingStrategy::RenderTexToScreen(GLint viewport[4], int nRenderPass, int split_h, const std::vector<GLuint>& vecTextures) {
+		RenderTexToScreen(viewport, nRenderPass, split_h, &vecTextures[0], vecTextures.size());
 	}
 
 	void DeferredRenderingStrategy::Clear() {
 //		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->SetFrameBuffer(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer());
 
 		IRenderingStrategy::Clear();
+	}
+
+	void DeferredRenderingStrategy::LPVInject(Light* pLight, std::function<void()> fRenderModels) {
+		FrameBuffer* pLightGStageFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_GBUFFER)->GetFrameBuffer(0);
+
+		GLuint texGDiffuse = pLightGStageFB->m_uTextures[0];
+		GLuint texGNormal = pLightGStageFB->m_uTextures[1];
+		GLuint texGPos = pLightGStageFB->m_uTextures[2];
+		GLuint texGLight = pLightGStageFB->m_uTextures[3];
+
+		RenderBegin(RENDER_PASS_ENUM::LIGHT_GBUFFER, 0, true);
+			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, *pLight);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, pLight->Dir());
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, pLight->GetPosition());
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, pLight->GetPosition());
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, pLight->Dir());
+			SHADER.BindFloat(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, pLight->GetIntensity());
+			fRenderModels();
+		RenderEnd();
+
+		RenderBegin(RENDER_PASS_ENUM::LIGHT_INJECT, 0, true);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, texGLight);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, texGNormal);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, texGPos);
+			m_quad2.Render(SHADER);
+		RenderEnd();
+	}
+
+	void DeferredRenderingStrategy::LPVPropagate(int iteration) {
+		FrameBuffer* pLightInjectFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0);
+
+		GLuint texLPVPropagate[] = {
+				pLightInjectFB->m_uTextures[0]
+				, pLightInjectFB->m_uTextures[1]
+				, pLightInjectFB->m_uTextures[2]
+		};
+
+		//just for clear
+		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderBegin(true);
+		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderEnd();
+
+		for(int i=0; i<iteration; ++i){
+			FrameBuffer* pThisFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(i%2);
+			FrameBuffer* pNextFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer((i+1)%2);
+
+			RenderBegin(RENDER_PASS_ENUM::LIGHT_PROPAGATE, pThisFB, true);
+				SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, texLPVPropagate, 3);
+				m_quad.Render(SHADER);
+			RenderEnd();
+
+			for(int j=0; j<3; ++j){
+				texLPVPropagate[j] = pThisFB->m_uTextures[j];
+			}
+
+			RenderBegin(RENDER_PASS_ENUM::ACCUM_LPV, i%2, i==0);
+				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, pNextFB->m_uTextures, 3);
+				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX1, texLPVPropagate, 3);
+				m_quad.Render(SHADER);
+			RenderEnd();
+		}
+	}
+
+	void DeferredRenderingStrategy::__QuadTest() {
+		RenderBegin(RENDER_PASS_ENUM::QUAD_TEST, 0, true);
+//			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			m_quad2.Render(SHADER);
+//			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		RenderEnd();
+	}
+
+	void DeferredRenderingStrategy::LPVFinal(FrameBuffer* pFrameBuffer) {
+		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0);
+
+		RenderBegin(RENDER_PASS_ENUM::POST_LPV, pFrameBuffer, true);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, pGStageFB->m_uTextures[3]);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, pGStageFB->m_uTextures[2]);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, pGStageFB->m_uTextures[1]);
+			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures, 3);
+//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
+			m_quad.Render(SHADER);
+		RenderEnd();
+	}
+
+	void DeferredRenderingStrategy::__CoordTest() {
+		GLuint tex_gradient[] = {tex_r->GetID(), tex_g->GetID(), tex_b->GetID()};
+		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0);
+
+
+		RenderBegin(RENDER_PASS_ENUM::TEST_LIGHTING, 0, true);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, pGStageFB->m_uTextures[1]);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, pGStageFB->m_uTextures[2]);
+			SHADER.BindTextures(SHADER_UNIFORM_ENUM::R0, tex_gradient, 3);
+			m_quad.Render(SHADER);
+		RenderEnd();
+	}
+
+	void DeferredRenderingStrategy::RenderScreen() {
+		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0);
+		FrameBuffer* pLightGStageFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_GBUFFER)->GetFrameBuffer(0);
+
+		GLint viewport[4];
+		glGetIntegerv( GL_VIEWPORT, viewport );
+
+		std::vector<GLuint> vecTextures;
+		if(m_pFrameBuffer)
+			vecTextures.push_back(m_pFrameBuffer->m_uTextures[0]);
+
+		vecTextures.push_back(pGStageFB->m_uTextures[0]);
+		vecTextures.push_back(pGStageFB->m_uTextures[2]); //pos
+		vecTextures.push_back(pLightGStageFB->m_uTextures[3]);
+		for(int i=0; i<3; ++i){
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
+//			vecTextures.push_back(tex_gradient[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures[i]);
+		}
+		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer(0)->m_uTextures[0]);
+		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING)->GetFrameBuffer(0)->m_uTextures[0]); //depth
+
+		vecTextures.push_back(pGStageFB->m_uTextures[1]);
+		vecTextures.push_back(pGStageFB->m_uTextures[3]);
+
+		RenderTexToScreen(viewport, RENDER_PASS_ENUM::RENDER_TO_SCREEN, 3, vecTextures);
+	}
+
+	void DeferredRenderingStrategy::RenderGStage(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels) {
+		const unsigned long MAX_LIGHT_COUNT = 1;
+
+		RenderBegin(RENDER_PASS_ENUM::MAIN_GBUFFER, 0, true);
+			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, camera);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir());
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition());
+			for(int i=0; i<std::min(vecLights.size(), MAX_LIGHT_COUNT); ++i){
+				Light& light = *dynamic_cast<Light*>(vecLights[i].get());
+				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, light.GetPosition());
+				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, light.Dir());
+				SHADER.BindFloat(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, light.GetIntensity());
+			}
+			fRenderModels();
+		RenderEnd();
 	}
 }

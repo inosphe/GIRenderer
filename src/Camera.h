@@ -17,7 +17,7 @@ namespace Render{
 
 		void Init();
 
-		const glm::mat4 GetViewProj() const;
+
 		const glm::mat4 GetView() const;
 
 	private:

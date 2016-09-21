@@ -28,7 +28,7 @@ namespace Render{
 		AddRenderPass(pRenderPass, 0);
 	}
 
-	void ForwardRenderingStrategy::Render(const Camera& camera, std::function<void()> fRenderModels) {
+	void ForwardRenderingStrategy::Render(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels) {
 #define SHADER (*GetCurrentRenderPass())
 
 		RenderBegin(0, 0, true);

@@ -108,6 +108,7 @@ namespace Core {
 	}
 
 	void Application::Render() {
+		m_pRenderer->SetLights(m_pSceneManager->GetScene()->GetLights());
 		m_pRenderer->Render([this](){m_pSceneManager->Render(m_pRenderer->GetShader());});
 
 		if(m_state.bRenderGUI)

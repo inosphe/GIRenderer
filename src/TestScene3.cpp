@@ -16,7 +16,7 @@ void TestScene3::Init() {
 
 	for(auto scene : resources){
 		auto model = new Render::FBXModel(scene, m_app.GetResourceManager());
-		m_gameObjects.push_back(std::shared_ptr<GameObject>(new GameObject(model)));
+		AddGameObject(std::shared_ptr<GameObject>(new GameObject(GameObject::Type::Entity, model)));
 	}
 
 	m_pMainCamera = std::shared_ptr<Render::Camera>(new Render::Camera());
@@ -24,12 +24,13 @@ void TestScene3::Init() {
 	m_pMainCamera->SetPosition(glm::vec3(-202, 1123, -54.2));
 	m_pMainCamera->SetDirection(glm::vec3(-0.5, -1, 0));
 	m_app.SetCamera(m_pMainCamera);
-	m_gameObjects.push_back(std::shared_ptr<GameObject>(m_pMainCamera));
+	AddGameObject(std::shared_ptr<GameObject>(m_pMainCamera));
 
 	auto light = new Light();
-	light->SetDirection(glm::vec3(1.0, -1.0, 1.0));
-	m_gameObjects.push_back(std::shared_ptr<GameObject>(light));
-
+	light->SetPosition(glm::vec3(-202, 1123, -54.2));
+	light->SetDirection(glm::vec3(-0.5, -1, 0));
+	light->SetIntensity(5.0);
+	AddGameObject(std::shared_ptr<GameObject>(light));
 }
 
 TestScene3::~TestScene3() {

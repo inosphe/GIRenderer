@@ -4,7 +4,7 @@
 
 #include "Light.h"
 
-Light::Light():GameObject() {
+Light::Light():GameObject(GameObject::Type::Light) {
 	string name = "Light";
 	name += m_ID;
 	SetName(name);

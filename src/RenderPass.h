@@ -21,6 +21,7 @@ namespace Render{
 		virtual void Clear();
 
 		virtual void RenderBegin(int iFrameBuffer, bool bClear);
+		virtual void RenderBegin(FrameBuffer* pFB, bool bClear);
 		virtual void RenderEnd();
 
 		void SetFrameBuffer(FrameBuffer* pFrameBuffer, int at);

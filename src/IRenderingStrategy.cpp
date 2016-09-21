@@ -29,6 +29,11 @@ namespace Render{
 		GetCurrentRenderPass()->RenderBegin(iFrameBuffer, bClean);
 	}
 
+	void IRenderingStrategy::RenderBegin(int nRenderPass, FrameBuffer *pFrameBuffer, bool bClean) {
+		SetRenderPass(nRenderPass);
+		GetCurrentRenderPass()->RenderBegin(pFrameBuffer, bClean);
+	}
+
 	void IRenderingStrategy::RenderEnd() {
 		GetCurrentRenderPass()->RenderEnd();
 	}

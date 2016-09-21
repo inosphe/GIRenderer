@@ -59,12 +59,15 @@ namespace Render{
 	}
 
 	void RenderPass::RenderBegin(int iFrameBuffer, bool bClear) {
+		UseFrameBuffer(iFrameBuffer);
+		RenderBegin(m_pCurFrameBuffer, bClear);
+	}
+
+	void RenderPass::RenderBegin(FrameBuffer *pFB, bool bClear) {
 		BindProgram();
 
-		UseFrameBuffer(iFrameBuffer);
-
-		if(m_pCurFrameBuffer){
-			m_pCurFrameBuffer->RenderBegin(bClear);
+		if(pFB){
+			pFB->RenderBegin(bClear);
 		}
 		else{
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);

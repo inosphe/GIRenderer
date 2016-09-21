@@ -6,6 +6,7 @@
 #define PROJECT_SHADERPARAM_H
 
 #include "common_header.h"
+#include "GameObject.h"
 
 #include <GLFW/glfw3.h>
 #include <map>
@@ -18,7 +19,9 @@ namespace Render{
 		, LOOK
 		, CAMERA_POS
 		, VIEWPROJ
-		, LIGHT
+		, LIGHT_POS
+		, LIGHT_DIR
+		, LIGHT_INTENSITY
 		, GBUFFER_DIFFUSE
 		, GBUFFER_POS
 		, GBUFFER_NORMAL
@@ -60,11 +63,12 @@ namespace Render{
 		void AddShaderUnfiorm(SHADER_UNIFORM_ENUM val, std::string varName, int index=0);
 
 		void BindMat4x4const(SHADER_UNIFORM_ENUM eVal, glm::mat4x4& matTransform);
-		void BindViewProj(SHADER_UNIFORM_ENUM eVal, const Camera& camera);
+		void BindViewProj(SHADER_UNIFORM_ENUM eVal, const GameObject& camera);
 		void BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v);
 		void BindTexture(SHADER_UNIFORM_ENUM eVal, GLuint uTexture);
 		void BindTextures(SHADER_UNIFORM_ENUM eVal, GLuint* uTextures, const uint32_t numTexture);
 		void BindInt(SHADER_UNIFORM_ENUM eVal, GLint val);
+		void BindFloat(SHADER_UNIFORM_ENUM eVal, GLfloat val);
 
 		void Clear();
 

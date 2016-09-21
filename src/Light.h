@@ -11,6 +11,12 @@ class Light : public GameObject{
 public:
 	Light();
 	virtual ~Light();
+
+	inline void SetIntensity(float v){m_fIntensity = v;}
+	inline float GetIntensity(){return m_fIntensity;}
+
+protected:
+	float m_fIntensity = 1.0;
 };
 
 

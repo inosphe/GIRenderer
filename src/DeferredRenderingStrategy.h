@@ -11,8 +11,10 @@
 #include "DummyGradientTexture.h"
 #include <vector>
 #include "Camera.h"
+#include "FrameBuffer.h"
+#include "Light.h"
 
-const int lpv_size = 32;
+const int lpv_size = 48;
 const int lpv_cellsize = 64;
 
 namespace Render{
@@ -39,11 +41,22 @@ namespace Render{
 		void Init() override;
 		void Clear() override;
 
-		virtual void Render(const Camera& camera, std::function<void()> fRenderModels) override ;
+		virtual void Render(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels) override ;
 
 	protected:
-		void RenderToScreen(GLint viewport[4], int nRenderPass, int split_h, const GLuint* textures, int num);
-		void RenderToScreen(GLint viewport[4], int nRenderPass, int split_h, const std::vector<GLuint>& vecTextures);
+		void RenderGStage(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels);
+
+		void LPVInject(Light* pLight, std::function<void()> fRenderModels);
+		void LPVPropagate(int iteration);
+		void LPVFinal(FrameBuffer* pFrameBuffer);
+
+		void RenderScreen();
+
+		void RenderTexToScreen(GLint viewport[4], int nRenderPass, int split_h, const GLuint* textures, int num);
+		void RenderTexToScreen(GLint viewport[4], int nRenderPass, int split_h, const std::vector<GLuint>& vecTextures);
+
+		void __QuadTest();
+		void __CoordTest();
 
 	private:
 		void InitFrameBuffer();
@@ -53,10 +66,9 @@ namespace Render{
 		Quad m_quad2;
 		DummyModel m_dummy;
 
-		Camera light;
-
 	private:
 		DummyGradientTexture *tex_r, *tex_g, *tex_b;
+		FrameBuffer* m_pFrameBuffer = nullptr;
 	};
 }
 

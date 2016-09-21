@@ -17,7 +17,22 @@ void IScene::Update(int ms) {
 }
 
 void IScene::Render(Render::ShaderParam& shader) {
-	for(auto model: GetObjects()){
+	for(auto model: GetEntities()){
 		model->Render(shader);
 	}
+}
+
+void IScene::AddGameObject(GameObject::PTR pObject) {
+	switch(pObject->GetType()){
+		case GameObject::Type::Entity:
+			m_vecEntities.push_back(pObject);
+			break;
+		case GameObject::Type::Light:
+			m_vecLights.push_back(pObject);
+			break;
+		case GameObject::Type::Camera:
+			break;
+	}
+
+	m_vecObjects.push_back(pObject);
 }

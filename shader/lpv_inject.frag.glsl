@@ -3,7 +3,6 @@
 uniform sampler2D Light;
 uniform sampler2D Normal;
 uniform sampler2D Pos;
-uniform sampler2D Gradient[3];
 
 uniform int lpv_size;
 
@@ -30,5 +29,4 @@ void main(){
 	//for(int i=0; i<3; ++i)
 	    //LPV_out[i] = vec4(1.0);
 	    //LPV_out[i] = fcolor;
-    	//LPV_out[i] = texelFetch(Gradient[i], ivec2(vtc.x * lpv_size, vtc.y * lpv_size*lpv_size), 0);
 }
