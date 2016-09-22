@@ -33,8 +33,8 @@ namespace Render{
 
 		RenderBegin(0, 0, true);
 			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, camera);
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir());
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition());
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir(), true);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition(), false);
 			fRenderModels();
 		RenderEnd();
 	}

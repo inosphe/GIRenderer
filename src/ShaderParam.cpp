@@ -30,11 +30,11 @@ namespace Render{
 		}
 	}
 
-	void ShaderParam::BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v) {
+	void ShaderParam::BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v, bool bNormalize) {
 		auto itr = m_mapShaderUniform.find(eVal);
 		if(itr != m_mapShaderUniform.end()){
-			glm::vec3 _v = glm::normalize(v);
 			GLint loc = itr->second.loc;
+			glm::vec3 _v = bNormalize?normalize(v):v;
 			if(loc>=0)
 				glUniform3fv(loc, 1, value_ptr(_v));
 		}

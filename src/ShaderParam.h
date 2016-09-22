@@ -64,7 +64,7 @@ namespace Render{
 
 		void BindMat4x4const(SHADER_UNIFORM_ENUM eVal, glm::mat4x4& matTransform);
 		void BindViewProj(SHADER_UNIFORM_ENUM eVal, const GameObject& camera);
-		void BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v);
+		void BindVec3f(SHADER_UNIFORM_ENUM eVal, const glm::vec3 v, bool bNormalize);
 		void BindTexture(SHADER_UNIFORM_ENUM eVal, GLuint uTexture);
 		void BindTextures(SHADER_UNIFORM_ENUM eVal, GLuint* uTextures, const uint32_t numTexture);
 		void BindInt(SHADER_UNIFORM_ENUM eVal, GLint val);

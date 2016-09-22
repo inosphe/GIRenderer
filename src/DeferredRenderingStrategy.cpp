@@ -244,7 +244,7 @@ namespace Render{
 		for(auto light : vecLights){
 			LPVInject(dynamic_cast<Light*>(light.get()), fRenderModels);
 		}
-		const int iteration = 4;
+		const int iteration = 5;
 		LPVPropagate(iteration);
 		LPVFinal(m_pFrameBuffer);
 
@@ -303,10 +303,10 @@ namespace Render{
 
 		RenderBegin(RENDER_PASS_ENUM::LIGHT_GBUFFER, 0, true);
 			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, *pLight);
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, pLight->Dir());
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, pLight->GetPosition());
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, pLight->GetPosition());
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, pLight->Dir());
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, pLight->Dir(), true);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, pLight->GetPosition(), false);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, pLight->GetPosition(), false);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, pLight->Dir(), true);
 			SHADER.BindFloat(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, pLight->GetIntensity());
 			fRenderModels();
 		RenderEnd();
@@ -346,7 +346,10 @@ namespace Render{
 
 			FrameBuffer* pLPVAcuumNextFB = GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer((i+1)%2);
 			RenderBegin(RENDER_PASS_ENUM::ACCUM_LPV, i%2, i==0);
-				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, pLPVAcuumNextFB->m_uTextures, 3);
+//				if(i==0)
+//					SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
+//				else
+					SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, pLPVAcuumNextFB->m_uTextures, 3);
 				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX1, texLPVPropagate, 3);
 				m_quad.Render(SHADER);
 			RenderEnd();
@@ -402,19 +405,20 @@ namespace Render{
 //		vecTextures.push_back(pGStageFB->m_uTextures[1]); //normal
 		vecTextures.push_back(pGStageFB->m_uTextures[2]); //pos
 		vecTextures.push_back(pGStageFB->m_uTextures[3]);
-		vecTextures.push_back(pLightGStageFB->m_uTextures[3]);
 		for(int i=0; i<3; ++i){
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
+//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(0)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(1)->m_uTextures[i]);
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->m_uTextures[i]);
+//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->m_uTextures[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures[i]);
 		}
 		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer(0)->m_uTextures[0]);
 		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING)->GetFrameBuffer(0)->m_uTextures[0]); //depth
 
-		vecTextures.push_back(pGStageFB->m_uTextures[1]);
-		vecTextures.push_back(pGStageFB->m_uTextures[3]);
+		vecTextures.push_back(pLightGStageFB->m_uTextures[1]);
+		vecTextures.push_back(pLightGStageFB->m_uTextures[2]);
+		vecTextures.push_back(pLightGStageFB->m_uTextures[3]);
 
 		RenderTexToScreen(viewport, RENDER_PASS_ENUM::RENDER_TO_SCREEN, 3, vecTextures);
 	}
@@ -424,12 +428,12 @@ namespace Render{
 
 		RenderBegin(RENDER_PASS_ENUM::MAIN_GBUFFER, 0, true);
 			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, camera);
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir());
-			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition());
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir(), true);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition(), false);
 			for(int i=0; i<std::min(vecLights.size(), MAX_LIGHT_COUNT); ++i){
 				Light& light = *dynamic_cast<Light*>(vecLights[i].get());
-				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, light.GetPosition());
-				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, light.Dir());
+				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, light.GetPosition(), false);
+				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, light.Dir(), true);
 				SHADER.BindFloat(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, light.GetIntensity());
 			}
 			fRenderModels();
