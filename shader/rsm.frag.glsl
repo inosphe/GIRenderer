@@ -28,6 +28,6 @@ void main(){
 	normal = pack(normalize(fnormal), 2.0);
 
     vec3 light = normalize(fposition.xyz - light_pos);
-	out_light = max(dot(fnormal.xyz, -light), 0.3) * light_intensity * color0;
+	out_light = max(dot(fnormal.xyz, -light)*light_intensity, 0.3) * color0;
 
 }

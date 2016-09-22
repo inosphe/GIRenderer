@@ -6,6 +6,7 @@
 #define PROJECT_TESTSCENE3_H
 
 #include "IScene.h"
+#include "Tweener.h"
 #include <vector>
 #include <memory>
 
@@ -19,8 +20,11 @@ public:
 	TestScene3(Core::Application& app);
 	virtual ~TestScene3();
 	void Init() override;
+	virtual void Update(int ms);
 
 	std::vector<std::shared_ptr<Render::IModel>> models;
+
+	Tweener tween;
 };
 
 

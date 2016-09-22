@@ -40,6 +40,7 @@ vec3 calcFinalColor(vec4 pos, vec3 normal){
 
 void main(){
     vec3 normal = unpack(texture(Normal, ftexcoord), 2.0).xyz;
+    normal = normalize(normal);
 
     vec4 pos = unpack(texture(Pos, ftexcoord), 4096.0);
 
@@ -63,6 +64,6 @@ void main(){
 
     vec4 color4 = vec4(color, 0.0);
 
-    //FragColor = color4*10;
-    FragColor = texture(Light, ftexcoord) + color4;
+    FragColor = texture(Light, ftexcoord);
+    FragColor += color4;
 }

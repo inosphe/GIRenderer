@@ -38,7 +38,18 @@ TestScene3::~TestScene3() {
 }
 
 TestScene3::TestScene3(Core::Application &app)
-:IScene(app)
+:IScene(app), tween(glm::vec3(-202, 1123, -300), glm::vec3(-202, 1123, 300), 10.0f)
 {
 
+}
+
+void TestScene3::Update(int ms) {
+	IScene::Update(ms);
+
+//	tween.Update(ms/1000.0f);
+//
+//	auto light0 = m_vecLights[0];
+//	if(light0.get()){
+//		light0->SetPosition(tween.GetValue());
+//	}
 }

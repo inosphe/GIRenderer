@@ -24,34 +24,48 @@ Quad::Quad(int sx, int sy, int tw, int th, int adjust, bool point) {
 	};
 	const GLuint indexData[] = {0, 1, 2, 3, 4, 5};
 
-	std::vector<QUAD_VERTEX_FORMAT> vertices(6*sx*sy);
+	int nVertexCount = sx*sy;
+	if(!point) nVertexCount *= 6;
+
+	std::vector<QUAD_VERTEX_FORMAT> vertices(nVertexCount);
 	std::vector<GLuint> indices;
 	for(int x=0; x<sx; ++x){
 		for(int y=0; y<sy; ++y){
-			float _x = interpolate(-1.0f, 1.0f, float(x)/sx) + 1.0f/sx;
-			float _y = interpolate(-1.0f, 1.0f, float(y)/sy) + 1.0f/sy;
+			float _x = interpolate(-1.0f, 1.0f, float(x)/sx);
+			float _y = interpolate(-1.0f, 1.0f, float(y)/sy);
 			float _u = interpolate(0.0f, 1.0f, float(x)/sx);
 			float _v = interpolate(0.0f, 1.0f, float(y)/sy);
 
-			for(int i=0; i<6; ++i){
-				int idx = 6*(x+sx*y)+i;
-				vertices[idx].x = _x + vertexData[i*5+0]/sx;
-				vertices[idx].y = _y + vertexData[i*5+1]/sy;
-				vertices[idx].z = 0.0f;
-				vertices[idx].u = _u + vertexData[i*5+3]/sx + 0.5f/(tw)*adjust;
-				vertices[idx].v = _v + vertexData[i*5+4]/sy + 0.5f/(th)*adjust;
-				vertices[idx].color[0] = 128+127.0f*x/sx;
-				vertices[idx].color[1] = 128+127.0f*y/sy;
-				vertices[idx].color[2] = 0.0f;
-				vertices[idx].color[3] = 0.0f;
+			if(!point){
+				for(int i=0; i<6; ++i){
+					int idx = 6*(x+sx*y)+i;
+					vertices[idx].x = _x + vertexData[i*5+0]/sx + 1.0f/sx;
+					vertices[idx].y = _y + vertexData[i*5+1]/sy + 1.0f/sy;
+					vertices[idx].z = 0.0f;
+					vertices[idx].u = _u + vertexData[i*5+3]/sx + 0.5f/(tw)*adjust;
+					vertices[idx].v = _v + vertexData[i*5+4]/sy + 0.5f/(th)*adjust;
+					vertices[idx].color[0] = 128+127.0f*x/sx;
+					vertices[idx].color[1] = 128+127.0f*y/sy;
+					vertices[idx].color[2] = 0.0f;
+					vertices[idx].color[3] = 0.0f;
 
-				if(!point){
 					indices.push_back(idx);
 				}
-				else{
-					if(i%3==0)
-						indices.push_back(idx);
-				}
+			}
+			else{
+				int idx = x+sx*y;
+				QUAD_VERTEX_FORMAT v;
+				v.x = _x + 1.0f/sx;
+				v.y = _y + 1.0f/sy;
+				v.z = 0.0f;
+				v.u = _u;
+				v.v = _v;
+				v.color[0] = 255.0f*x/sx;
+				v.color[1] = 255.0f*y/sy;
+				v.color[2] = 0.0f;
+				v.color[3] = 0.0f;
+				vertices[idx] = v;
+				indices.push_back(idx);
 			}
 		}
 	}

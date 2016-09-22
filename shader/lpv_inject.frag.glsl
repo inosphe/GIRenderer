@@ -18,9 +18,10 @@ layout(location = 0) out vec4 LPV_out[3];
 
 void main(){
     vec4 normal = unpack(texture(Normal, ftexcoord), 2.0);
+    normal = normalize(normal);
     vec4 SHcoeffs = SH_evaluateCosineLobe_direct( normal.xyz );
 
-    vec4 light = texture(Light, ftexcoord) * 50;
+    vec4 light = texture(Light, ftexcoord) * 25;
 
 	LPV_out[0] = pack(light.x * SHcoeffs, 8.0);
 	LPV_out[1] = pack(light.y * SHcoeffs, 8.0);

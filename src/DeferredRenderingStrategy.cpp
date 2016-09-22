@@ -15,7 +15,7 @@ namespace Render{
 	DeferredRenderingStrategy::DeferredRenderingStrategy()
 	:IRenderingStrategy()
 	, m_quad(1, 1, 640, 480, 0, false)
-	, m_quad2(lpv_size, lpv_size*lpv_size, lpv_size, lpv_size*lpv_size, -1, true)
+	, m_quad2(lpv_size*2, lpv_size*lpv_size*4, lpv_size, lpv_size*lpv_size, 0, true)
 	{
 	}
 
@@ -244,14 +244,22 @@ namespace Render{
 		for(auto light : vecLights){
 			LPVInject(dynamic_cast<Light*>(light.get()), fRenderModels);
 		}
-		const int iteration = 2;
+		const int iteration = 4;
 		LPVPropagate(iteration);
 		LPVFinal(m_pFrameBuffer);
+
+		//__QuadTest();
 
 		glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
 		if(m_pFrameBuffer)
 			RenderScreen();
+
+		std::vector<GLuint> vecTextures;
+		GLint viewport2[4] = {500, 0, lpv_size, lpv_size*lpv_size};
+		vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer(0)->m_uTextures[0]);
+		//RenderTexToScreen(viewport2, RENDER_PASS_ENUM::RENDER_TO_SCREEN, 1, vecTextures);
+
 	}
 
 	void DeferredRenderingStrategy::RenderTexToScreen(GLint viewport[4], int nRenderPass, int split_h, const GLuint* textures, int num) {
@@ -304,10 +312,12 @@ namespace Render{
 		RenderEnd();
 
 		RenderBegin(RENDER_PASS_ENUM::LIGHT_INJECT, 0, true);
+			glDisable(GL_DEPTH_TEST);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, texGLight);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, texGNormal);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, texGPos);
 			m_quad2.Render(SHADER);
+			glEnable(GL_DEPTH_TEST);
 		RenderEnd();
 	}
 
@@ -395,9 +405,9 @@ namespace Render{
 		vecTextures.push_back(pLightGStageFB->m_uTextures[3]);
 		for(int i=0; i<3; ++i){
 			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0)->m_uTextures[i]);
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(0)->m_uTextures[i]);
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(1)->m_uTextures[i]);
+//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0)->m_uTextures[i]);
+//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(0)->m_uTextures[i]);
+//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(1)->m_uTextures[i]);
 			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->m_uTextures[i]);
 		}
 		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer(0)->m_uTextures[0]);
@@ -408,12 +418,6 @@ namespace Render{
 
 		RenderTexToScreen(viewport, RENDER_PASS_ENUM::RENDER_TO_SCREEN, 3, vecTextures);
 	}
-
-
-
-
-
-
 
 	void DeferredRenderingStrategy::RenderGStage(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels) {
 		const unsigned long MAX_LIGHT_COUNT = 1;
