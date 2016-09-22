@@ -45,8 +45,11 @@ void GameObject::Render(Render::ShaderParam& shader) {
 
 void GameObject::Update(int ms) {
 	IMovableObject::Update(ms);
-	if(m_pModel)
+	if(m_pModel){
+		m_pModel->SetPosition(GetPosition());
+		m_pModel->SetRotation(GetRotation());
 		m_pModel->UpdateForRender();
+	}
 }
 
 const glm::mat4 GameObject::GetViewProj() const{

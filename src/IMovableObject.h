@@ -30,6 +30,8 @@ public:
 	void SetPosition(const glm::vec3& pos);
 	inline glm::vec3 GetPosition() const {return m_vPosition;}
 	inline void SetPositionElement(int i, float v){m_vPosition[i]=v;}
+	inline glm::quat GetRotation(){return m_qRotation;}
+	inline void SetRotation(glm::quat q){m_qRotation = q;}
 
 	glm::vec3 GetEuler();
 	void SetEuler(glm::vec3& rot);
