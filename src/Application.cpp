@@ -93,6 +93,8 @@ namespace Core {
 		m_pTimer->Update();
 		m_pSceneManager->Update(m_pTimer->GetDelta());
 
+		m_pMoveTarget = m_pSceneManager->GetMoveTarget().get();
+
 		GLUtil::CheckError();
 
 		int state = glfwGetMouseButton(m_pWindow, GLFW_MOUSE_BUTTON_RIGHT);

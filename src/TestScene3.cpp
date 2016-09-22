@@ -14,17 +14,17 @@ void TestScene3::Init() {
 
 	auto resources = m_app.GetResourceManager().LoadFBXFromConfig("resources.txt");
 
-	for(auto scene : resources){
-		auto model = new Render::FBXModel(scene, m_app.GetResourceManager());
-		AddGameObject(std::shared_ptr<GameObject>(new GameObject(GameObject::Type::Entity, model)));
-	}
-
 	m_pMainCamera = std::shared_ptr<Render::Camera>(new Render::Camera());
 	m_pMainCamera->Init();
 	m_pMainCamera->SetPosition(glm::vec3(-202, 1123, -54.2));
 	m_pMainCamera->SetDirection(glm::vec3(-0.5, -1, 0));
 	m_app.SetCamera(m_pMainCamera);
 	AddGameObject(std::shared_ptr<GameObject>(m_pMainCamera));
+
+	for(auto scene : resources){
+		auto model = new Render::FBXModel(scene, m_app.GetResourceManager());
+		AddGameObject(std::shared_ptr<GameObject>(new GameObject(GameObject::Type::Entity, model)));
+	}
 
 	auto light = new Light();
 	light->SetPosition(glm::vec3(-202, 1123, -54.2));

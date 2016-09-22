@@ -23,7 +23,7 @@ namespace Core{
 		m_pScene->Init();
 
 		m_pWindow0 = m_pApp->GetGUI().MakeObjectPropertyWindow();
-		m_pWindow0->SetObjects(m_pScene->GetObjects());
+		m_pWindow0->SetObjects(m_pScene->GetObjects(), 0);
 
 		return true;
 	}
@@ -41,5 +41,9 @@ namespace Core{
 
 	void SceneManager::Render(Render::ShaderParam& shader) {
 		m_pScene->Render(shader);
+	}
+
+	GameObject::PTR SceneManager::GetMoveTarget() {
+		return m_pWindow0->GetSelected();
 	}
 }

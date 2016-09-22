@@ -115,7 +115,7 @@ void ObjectPropertyWindow::Init() {
 //	window->center();
 }
 
-void ObjectPropertyWindow::SetObjects(ObjectPropertyWindow::container &objects) {
+void ObjectPropertyWindow::SetObjects(ObjectPropertyWindow::container &objects, int i) {
 	m_pObjects = &objects;
 
 	std::vector<string> items;
@@ -123,9 +123,10 @@ void ObjectPropertyWindow::SetObjects(ObjectPropertyWindow::container &objects) 
 		items.push_back(obj->GetName());
 	}
 	m_pCombobox->setItems(items);
+	m_pCombobox->setSelectedIndex(i);
 	m_pParent->performLayout();
 
-	int i = m_pCombobox->selectedIndex();
+	i = m_pCombobox->selectedIndex();
 	SetObject((*m_pObjects)[i]);
 }
 
@@ -140,4 +141,8 @@ void ObjectPropertyWindow::SetObject(std::shared_ptr<GameObject> object) {
 	prop_rot_x.SetTarget(object);
 	prop_rot_y.SetTarget(object);
 	prop_rot_z.SetTarget(object);
+}
+
+GameObject::PTR ObjectPropertyWindow::GetSelected() {
+	return (*m_pObjects)[m_pCombobox->selectedIndex()];
 }

@@ -37,9 +37,13 @@ public:
 	typedef std::vector<std::shared_ptr<GameObject>> container;
 
 	void Init();
-	void SetObjects(container& objects);
-	void SetObject(std::shared_ptr<GameObject> object);
+	void SetObjects(container& objects, int i);
 	void Update();
+
+	GameObject::PTR GetSelected();
+
+protected:
+	void SetObject(std::shared_ptr<GameObject> object);
 
 protected:
 	nanogui::Screen* m_pParent = nullptr;
