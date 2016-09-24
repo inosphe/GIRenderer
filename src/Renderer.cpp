@@ -25,6 +25,7 @@ namespace Render {
 	void Renderer::Clear() {
 		if(m_pRenderingStrategy){
 			m_pRenderingStrategy->Clear();
+			m_pRenderingStrategy = nullptr;
 		}
 	}
 
@@ -37,6 +38,13 @@ namespace Render {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		m_pRenderingStrategy->Render(GetTargetCameraRef(), m_vecLights, fRenderModels);
+	}
+
+	void Renderer::Reload() {
+		if(m_pRenderingStrategy){
+			m_pRenderingStrategy->Clear();
+			m_pRenderingStrategy->Init();
+		}
 	}
 }
 

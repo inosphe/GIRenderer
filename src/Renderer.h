@@ -25,6 +25,8 @@ namespace Render {
 		void Init();
 		void Clear();
 
+		void Reload();
+
 		template <typename T, typename... C>
 		void InitRenderingStrategy(C... args){
 			assert(!m_pRenderingStrategy);

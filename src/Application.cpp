@@ -144,6 +144,9 @@ namespace Core {
 			case GLFW_KEY_D:
 				this->m_pMoveTarget->Right();
 				return true;
+			case GLFW_KEY_R:
+				this->m_pRenderer->Reload();
+				return true;
 			default:
 				return false;
 		}
