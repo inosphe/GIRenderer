@@ -41,12 +41,15 @@ namespace Render{
 			RenderPassDeferred0* pGPass = new RenderPassDeferred0();
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::VIEWPROJ, "ViewProjection");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TRANSFORM, "ObjectTransform");
-			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0", 0);
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::CAMERA_POS, "CameraPos");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LOOK, "Look");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_POS, "light_pos");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_DIR, "light_dir");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, "light_intensity");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::SHADOW_VIEWPROJ, "ShadowViewProj");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::USE_SHADOW, "use_shadow");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::SHADOW_MAP, "ShadowMap", 8);
 			std::vector<std::pair<GLuint, std::string>> vecShaders;
 			vecShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/deferred.vert.glsl"));
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/rsm.frag.glsl"));
@@ -65,12 +68,13 @@ namespace Render{
 			RenderPassDeferred0* pGPass = new RenderPassDeferred0();
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::VIEWPROJ, "ViewProjection");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TRANSFORM, "ObjectTransform");
-			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0", 0);
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::CAMERA_POS, "CameraPos");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LOOK, "Look");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_POS, "light_pos");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_DIR, "light_dir");
 			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, "light_intensity");
+			pGPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::USE_SHADOW, "use_shadow");
 			std::vector<std::pair<GLuint, std::string>> vecShaders;
 			vecShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/deferred.vert.glsl"));
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/rsm.frag.glsl"));
@@ -236,6 +240,7 @@ namespace Render{
 
 	void DeferredRenderingStrategy::Render(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels) {
 		glDisable(GL_BLEND);
+		//glDepthRange(0.0, 1024.0);
 
 		GLint viewport[4];
 		glGetIntegerv( GL_VIEWPORT, viewport );
@@ -308,16 +313,17 @@ namespace Render{
 			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, pLight->GetPosition(), false);
 			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, pLight->Dir(), true);
 			SHADER.BindFloat(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, pLight->GetIntensity());
+			SHADER.BindInt(SHADER_UNIFORM_ENUM::USE_SHADOW, 0);
 			fRenderModels();
 		RenderEnd();
 
 		RenderBegin(RENDER_PASS_ENUM::LIGHT_INJECT, 0, true);
-			glDisable(GL_DEPTH_TEST);
+			//glDisable(GL_DEPTH_TEST);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, texGLight);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, texGNormal);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, texGPos);
 			m_quad2.Render(SHADER);
-			glEnable(GL_DEPTH_TEST);
+			//glEnable(GL_DEPTH_TEST);
 		RenderEnd();
 	}
 
@@ -401,24 +407,27 @@ namespace Render{
 		if(m_pFrameBuffer)
 			vecTextures.push_back(m_pFrameBuffer->m_uTextures[0]);
 
-		vecTextures.push_back(pGStageFB->m_uTextures[0]); //diffuse
-//		vecTextures.push_back(pGStageFB->m_uTextures[1]); //normal
-		vecTextures.push_back(pGStageFB->m_uTextures[2]); //pos
+//		vecTextures.push_back(pGStageFB->m_uTextures[0]); //diffuse
+		vecTextures.push_back(pGStageFB->m_uTextures[1]); //normal
+//		vecTextures.push_back(pGStageFB->m_uTextures[2]); //pos
 		vecTextures.push_back(pGStageFB->m_uTextures[3]);
+		vecTextures.push_back(pGStageFB->m_uDepthMap);
 		for(int i=0; i<3; ++i){
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(0)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(1)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->m_uTextures[i]);
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures[i]);
+//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures[i]);
 		}
 		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer(0)->m_uTextures[0]);
 		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING)->GetFrameBuffer(0)->m_uTextures[0]); //depth
 
+		vecTextures.push_back(pLightGStageFB->m_uTextures[0]);
 		vecTextures.push_back(pLightGStageFB->m_uTextures[1]);
 		vecTextures.push_back(pLightGStageFB->m_uTextures[2]);
 		vecTextures.push_back(pLightGStageFB->m_uTextures[3]);
+		vecTextures.push_back(pLightGStageFB->m_uDepthMap);
 
 		RenderTexToScreen(viewport, RENDER_PASS_ENUM::RENDER_TO_SCREEN, 3, vecTextures);
 	}
@@ -435,6 +444,9 @@ namespace Render{
 				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, light.GetPosition(), false);
 				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, light.Dir(), true);
 				SHADER.BindFloat(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, light.GetIntensity());
+				SHADER.BindViewProj(SHADER_UNIFORM_ENUM::SHADOW_VIEWPROJ, light);
+				SHADER.BindInt(SHADER_UNIFORM_ENUM::USE_SHADOW, 1);
+				SHADER.BindTexture(SHADER_UNIFORM_ENUM::SHADOW_MAP, GetRenderPass(LIGHT_GBUFFER)->GetFrameBuffer(0)->m_uDepthMap);
 			}
 			fRenderModels();
 		RenderEnd();

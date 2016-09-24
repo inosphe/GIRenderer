@@ -1,6 +1,9 @@
 #version 330
 
 uniform sampler2D Tex0;
+uniform sampler2D ShadowMap;
+uniform mat4 ShadowViewProj;
+uniform int use_shadow = 0;
 
 in vec4 fposition;
 in vec2 ftexcoord;
@@ -26,8 +29,17 @@ void main(){
 
     vec3 light = normalize(fposition.xyz - light_pos);
     float l = max(dot(fnormal.xyz, -light) * light_intensity, 0.3);
+    if(use_shadow == 1){
+        vec4 shadow_screen_pos = ShadowViewProj * fposition;
+        vec4 shadow_map_v = texture(ShadowMap, pack(shadow_screen_pos/shadow_screen_pos.w, 2.0).xy);
+        float v0 = shadow_map_v.x;
+        float v1 = (shadow_screen_pos.z)/shadow_screen_pos.w;
+        if(v0 < v1){
+            l = 0.3;
+        }
+    }
 
+    out_light = color0 * l;
 	normal = pack(fnormal, 2.0);
 	pos = pack(fposition, 4096.0);
-	out_light = color0 * l;
 }

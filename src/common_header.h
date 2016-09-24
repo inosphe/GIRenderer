@@ -8,3 +8,5 @@ using std::string;
 #define STB_IMAGE_STATIC false
 
 #define DECLARE_RESOURCE(class_name) typedef std::shared_ptr<class_name> PTR;
+
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE

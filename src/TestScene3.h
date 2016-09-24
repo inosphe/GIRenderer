@@ -25,6 +25,7 @@ public:
 	std::vector<std::shared_ptr<Render::IModel>> models;
 
 	Tweener tween;
+	Tweener tween_intensity;
 };
 
 

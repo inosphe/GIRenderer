@@ -2,6 +2,7 @@
 // Created by inosphe on 2016. 6. 18..
 //
 
+#include "common_header.h"
 #include "GameObject.h"
 #include "IModel.h"
 
@@ -61,7 +62,7 @@ const glm::mat4 GameObject::GetViewProj() const{
 
 	glm::vec3 center = m_vPosition + dir;
 
-	glm::mat4 Projection = glm::perspective(70.0f, 4.0f / 3.0f, 1.0f, 10000.f);
+	glm::mat4 Projection = glm::perspective(70.0f, 4.0f / 3.0f, 10.0f, 2048.f);
 	glm::mat4 View = glm::lookAtRH(m_vPosition, center, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 ViewProjection = Projection*View;
 

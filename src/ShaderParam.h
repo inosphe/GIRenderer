@@ -42,6 +42,9 @@ namespace Render{
 		, R3
 		, LPV_SIZE
 		, LPV_CELL_SIZE
+		, USE_SHADOW
+		, SHADOW_VIEWPROJ
+		, SHADOW_MAP
 	};
 
 	struct UNIFORM_DATA {
