@@ -21,13 +21,13 @@ void main(){
     normal = normalize(normal);
     vec4 SHcoeffs = SH_evaluateCosineLobe_direct( normal.xyz );
 
-    vec4 light = texture(Light, ftexcoord) * 25;
+    vec4 light = texture(Light, ftexcoord);
 
 	LPV_out[0] = pack(light.x * SHcoeffs, 8.0);
 	LPV_out[1] = pack(light.y * SHcoeffs, 8.0);
 	LPV_out[2] = pack(light.z * SHcoeffs, 8.0);
 
 	//for(int i=0; i<3; ++i)
-	    //LPV_out[i] = vec4(1.0);
+	    //LPV_out[i] = texture(Gradient[i], ftexcoord);
 	    //LPV_out[i] = fcolor;
 }

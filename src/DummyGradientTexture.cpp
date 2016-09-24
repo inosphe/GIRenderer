@@ -43,8 +43,8 @@ Render::DummyGradientTexture::DummyGradientTexture(int size, int type) {
 		, GL_RED
 		, GL_UNSIGNED_BYTE
 		, m_pData);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 }
 
 Render::DummyGradientTexture::~DummyGradientTexture() {

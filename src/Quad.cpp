@@ -39,16 +39,18 @@ Quad::Quad(int sx, int sy, int tw, int th, int adjust, bool point) {
 			if(!point){
 				for(int i=0; i<6; ++i){
 					int idx = 6*(x+sx*y)+i;
-					vertices[idx].x = _x + vertexData[i*5+0]/sx + 1.0f/sx;
-					vertices[idx].y = _y + vertexData[i*5+1]/sy + 1.0f/sy;
-					vertices[idx].z = 0.0f;
-					vertices[idx].u = _u + vertexData[i*5+3]/sx + 0.5f/(tw)*adjust;
-					vertices[idx].v = _v + vertexData[i*5+4]/sy + 0.5f/(th)*adjust;
-					vertices[idx].color[0] = 128+127.0f*x/sx;
-					vertices[idx].color[1] = 128+127.0f*y/sy;
-					vertices[idx].color[2] = 0.0f;
-					vertices[idx].color[3] = 0.0f;
+					QUAD_VERTEX_FORMAT v;
+					v.x = _x + vertexData[i*5+0]/sx + 1.0f/sx;
+					v.y = _y + vertexData[i*5+1]/sy + 1.0f/sy;
+					v.z = 0.0f;
+					v.u = _u + vertexData[i*5+3]/sx + 0.5f/(tw)*adjust;
+					v.v = _v + vertexData[i*5+4]/sy + 0.5f/(th)*adjust;
+					v.color[0] = 128+127.0f*x/sx;
+					v.color[1] = 128+127.0f*y/sy;
+					v.color[2] = 0.0f;
+					v.color[3] = 0.0f;
 
+					vertices[idx] = v;
 					indices.push_back(idx);
 				}
 			}
@@ -58,8 +60,14 @@ Quad::Quad(int sx, int sy, int tw, int th, int adjust, bool point) {
 				v.x = _x + 1.0f/sx;
 				v.y = _y + 1.0f/sy;
 				v.z = 0.0f;
+
 				v.u = _u;
+//				v.u += 0.25f/sx;
+				v.u += 0.5f/(tw)*adjust;
 				v.v = _v;
+//				v.v += 0.25f/sy;
+				v.v += 0.5f/(th)*adjust;
+
 				v.color[0] = 255.0f*x/sx;
 				v.color[1] = 255.0f*y/sy;
 				v.color[2] = 0.0f;

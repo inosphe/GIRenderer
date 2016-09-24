@@ -14,8 +14,8 @@
 namespace Render{
 	DeferredRenderingStrategy::DeferredRenderingStrategy()
 	:IRenderingStrategy()
-	, m_quad(1, 1, 640, 480, 0, false)
-	, m_quad2(lpv_size*2, lpv_size*lpv_size*4, lpv_size, lpv_size*lpv_size, 0, true)
+	, m_quad(1, 1, 640, 480, 0.0f, false)
+	, m_quad2(lpv_size, lpv_size*lpv_size, lpv_size, lpv_size*lpv_size, 0.0f, true)
 	{
 	}
 
@@ -107,7 +107,6 @@ namespace Render{
 			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_DIFFUSE, "Diffuse", 0);
 			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
 			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, "Normal", 2);
-			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::R0, "Gradient", 3);
 			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_SIZE, "lpv_size");
 			pLightPass0->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, "lpv_cellsize");
 			std::vector<std::pair<GLuint, std::string>> vecShader;
@@ -123,6 +122,36 @@ namespace Render{
 			pFB->Init();
 			pLightPass0->SetFrameBuffer(pFB, 0);
 			AddRenderPass(pLightPass0, RENDER_PASS_ENUM::TEST_LIGHTING);
+		}
+
+		//test lighting2
+		{
+			RenderPass* pPass = new RenderPass();
+			std::vector<std::pair<GLuint, std::string>> vecLightInjectShaders;
+			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/lpv_inject.vert.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/unpack_pos.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/volume_coord.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/testlighting2.frag.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/sh_func.glsl"));
+			vecLightInjectShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/unpack_pos.glsl"));
+			pPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, "Light", 0);
+			pPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
+			pPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, "Normal", 2);
+			pPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_SIZE, "lpv_size");
+			pPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, "lpv_cellsize");
+			pPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::R0, "Gradient", 3);
+			pPass->Init(vecLightInjectShaders);
+			pPass->BindProgram();
+			pPass->BindInt(SHADER_UNIFORM_ENUM::LPV_SIZE, lpv_size);
+			pPass->BindInt(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, lpv_cellsize);
+			FrameBuffer* pFB = new FrameBuffer(3, lpv_size, lpv_size*lpv_size);
+			pFB->Init();
+			pFB->m_color[0] = 0.5f;
+			pFB->m_color[1] = 0.5f;
+			pFB->m_color[2] = 0.5f;
+			pFB->m_color[3] = 0.5f;
+			pPass->SetFrameBuffer(pFB, 0);
+			AddRenderPass(pPass, RENDER_PASS_ENUM::TEST_LIGHTING2);
 		}
 
 		//LPV injection
@@ -249,11 +278,12 @@ namespace Render{
 		for(auto light : vecLights){
 			LPVInject(dynamic_cast<Light*>(light.get()), fRenderModels);
 		}
-		const int iteration = 5;
+		const int iteration = 2;
 		LPVPropagate(iteration);
 		LPVFinal(m_pFrameBuffer);
 
 		//__QuadTest();
+		__CoordTest();
 
 		glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
@@ -325,6 +355,15 @@ namespace Render{
 			m_quad2.Render(SHADER);
 			//glEnable(GL_DEPTH_TEST);
 		RenderEnd();
+
+		RenderBegin(RENDER_PASS_ENUM::TEST_LIGHTING2, 0, true);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, texGLight);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, texGNormal);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, texGPos);
+			GLuint tex[] = {tex_r->GetID(), tex_g->GetID(), tex_b->GetID()};
+			SHADER.BindTextures(SHADER_UNIFORM_ENUM::R0, tex, 3);
+			m_quad2.Render(SHADER);
+		RenderEnd();
 	}
 
 	void DeferredRenderingStrategy::LPVPropagate(int iteration) {
@@ -377,8 +416,9 @@ namespace Render{
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, pGStageFB->m_uTextures[3]);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, pGStageFB->m_uTextures[2]);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, pGStageFB->m_uTextures[1]);
-			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures, 3);
-//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
+//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures, 3);
+//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetCurFrameBuffer()->m_uTextures, 3);
+			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
 			m_quad.Render(SHADER);
 		RenderEnd();
 	}
@@ -411,9 +451,9 @@ namespace Render{
 		vecTextures.push_back(pGStageFB->m_uTextures[1]); //normal
 //		vecTextures.push_back(pGStageFB->m_uTextures[2]); //pos
 		vecTextures.push_back(pGStageFB->m_uTextures[3]);
-		vecTextures.push_back(pGStageFB->m_uDepthMap);
+//		vecTextures.push_back(pGStageFB->m_uDepthMap);
 		for(int i=0; i<3; ++i){
-//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(0)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(1)->m_uTextures[i]);
@@ -421,13 +461,18 @@ namespace Render{
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures[i]);
 		}
 		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::QUAD_TEST)->GetFrameBuffer(0)->m_uTextures[0]);
-		//vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING)->GetFrameBuffer(0)->m_uTextures[0]); //depth
+//		vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING)->GetFrameBuffer(0)->m_uTextures[0]); //depth
+		GLuint tex_gradient[] = {tex_r->GetID(), tex_g->GetID(), tex_b->GetID()};
+//		for(int i=0; i<3; ++i){
+//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::TEST_LIGHTING2)->GetFrameBuffer(0)->m_uTextures[i]); //depth
+//			vecTextures.push_back(tex_gradient[i]); //depth
+//		}
 
-		vecTextures.push_back(pLightGStageFB->m_uTextures[0]);
+//		vecTextures.push_back(pLightGStageFB->m_uTextures[0]);
 		vecTextures.push_back(pLightGStageFB->m_uTextures[1]);
-		vecTextures.push_back(pLightGStageFB->m_uTextures[2]);
+//		vecTextures.push_back(pLightGStageFB->m_uTextures[2]);
 		vecTextures.push_back(pLightGStageFB->m_uTextures[3]);
-		vecTextures.push_back(pLightGStageFB->m_uDepthMap);
+//		vecTextures.push_back(pLightGStageFB->m_uDepthMap);
 
 		RenderTexToScreen(viewport, RENDER_PASS_ENUM::RENDER_TO_SCREEN, 3, vecTextures);
 	}

@@ -25,7 +25,7 @@ void main(){
 
 	vec4 pos = unpack(texture(Pos, ftexcoord), 4096.0);
 	ivec2 ipos = coord3Dto2D(pos, lpv_size, lpv_cellsize);
-	vtc = vec2(ipos.x/hx, ipos.y/hy);
+	vtc = vec2(ipos.x, ipos.y);
 
 	pos = vec4((ipos.x/hx-0.5)*2, (ipos.y/hy-0.5)*2, 0, 1.0);
 	gl_Position = pos;

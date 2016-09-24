@@ -15,7 +15,7 @@
 #include "Light.h"
 
 const int lpv_size = 64;
-const int lpv_cellsize = 128;
+const int lpv_cellsize = 64;
 
 namespace Render{
 	class DeferredRenderingStrategy : public IRenderingStrategy{
@@ -24,6 +24,7 @@ namespace Render{
 			MAIN_GBUFFER
 			, LIGHT_GBUFFER
 			, TEST_LIGHTING
+			, TEST_LIGHTING2
 			, LIGHT_INJECT
 			, LIGHT_PROPAGATE
 			, RENDER_TO_SCREEN

@@ -13,6 +13,7 @@ in vec2 ftexcoord;
 vec4 SH_evaluateCosineLobe_direct( in vec3 dir );
 vec4 SH_evaluate(vec3 dir);
 ivec2 coord3Dto2D(vec4 pos, int lpv_size, int lpv_cellsize);
+vec4 pack(vec4 pos, float size);
 vec4 unpack(vec4 pos, float size);
 
 layout(location = 0) out vec4 FragColor;
@@ -52,6 +53,7 @@ void main(){
                 center_pos += vec4(1, 1, 1, 0) * lpv_cellsize * 0.5;
                 center_pos.w = 1.0;
 
+
                 vec4 vt = pos - center_pos;
                 vt = abs(vt);
                 vt /= lpv_cellsize;
@@ -64,7 +66,9 @@ void main(){
         }
     }
 
-    color /= 3.0;
+    color = calcFinalColor(pos, normal) * 30;
+
+    //color /= 8.0;
     //color /= 3.0;
 
 
@@ -73,8 +77,11 @@ void main(){
     //color[2] = max(color[2], 0);
 
     vec4 color4 = vec4(color, 0.0);
+    //color4 = SH_evaluate(normal);
 
-    FragColor = vec4(0.0);
-    FragColor = texture(Light, ftexcoord);
+    //FragColor = vec4(0.5);
+    FragColor = vec4(0);
+    //FragColor = texture(Light, ftexcoord);
+    //FragColor += pack(color4, 2.0);
     FragColor += color4;
 }

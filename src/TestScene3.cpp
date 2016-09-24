@@ -23,7 +23,10 @@ void TestScene3::Init() {
 
 	for(auto scene : resources){
 		auto model = new Render::FBXModel(scene, m_app.GetResourceManager());
-		AddGameObject(std::shared_ptr<GameObject>(new GameObject(GameObject::Type::Entity, model)));
+		auto gameobj = std::shared_ptr<GameObject>(new GameObject(GameObject::Type::Entity, model));
+		AddGameObject(gameobj);
+
+//		gameobj->SetPosition(glm::vec3(0, 500, 0));
 	}
 
 	auto light = new Light();
