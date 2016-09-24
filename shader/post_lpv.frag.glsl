@@ -1,12 +1,18 @@
 #version 330
 
 uniform sampler2D Light;
+uniform sampler2D Diffuse;
 uniform sampler2D Pos;
 uniform sampler2D Normal;
 uniform sampler2D LPV[3];
 
 uniform int lpv_size;
 uniform int lpv_cellsize;
+
+
+uniform vec3 light_pos;
+uniform vec3 light_dir;
+uniform float light_intensity = 0.0;
 
 in vec2 ftexcoord;
 
@@ -40,7 +46,7 @@ void main(){
     vec4 pos = unpack(texture(Pos, ftexcoord), 4096.0);
     pos.w = 1.0;
 
-    vec3 color = vec3(0.0);
+    vec4 indirect_luminance = vec4(0.0);
 
     for(int i=0; i<2; ++i){
         for(int j=0; j<2; ++j){
@@ -61,27 +67,32 @@ void main(){
                 float t = (1-vt.x)*(1-vt.y)*(1-vt.z);
 
                 c = c*t;
-                color += c;
+                indirect_luminance += vec4(c, 0.0);
             }
         }
     }
 
-    color = calcFinalColor(pos, normal) * 30;
 
     //color /= 8.0;
     //color /= 3.0;
 
+    //vec3 light = normalize(pos.xyz - light_pos);
+    //float direct_luminance = dot(normal.xyz, -light) * light_intensity;
+    vec4 direct_luminance = texture(Light, ftexcoord);
+    vec4 diffuse = texture(Diffuse, ftexcoord);
 
-    //color[0] = max(color[0], 0);
-    //color[1] = max(color[1], 0);
-    //color[2] = max(color[2], 0);
+    //indirect_luminance = vec4(calcFinalColor(pos, normal), 0.0);
+    //indirect_luminance *= 10;
+    indirect_luminance = max(indirect_luminance, 0.0);
 
-    vec4 color4 = vec4(color, 0.0);
-    //color4 = SH_evaluate(normal);
+    vec4 color4 = diffuse * max(direct_luminance+indirect_luminance, 0.3);
+
+    //vec4 color4 = vec4(color, 0.0);
 
     //FragColor = vec4(0.5);
-    FragColor = vec4(0);
-    //FragColor = texture(Light, ftexcoord);
+    //FragColor = vec4(0);
     //FragColor += pack(color4, 2.0);
     FragColor += color4;
+
+    FragColor = max(FragColor, 0.0);
 }

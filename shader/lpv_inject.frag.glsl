@@ -21,7 +21,7 @@ void main(){
     normal = normalize(normal);
     vec4 SHcoeffs = SH_evaluateCosineLobe_direct( normal.xyz );
 
-    vec4 light = texture(Light, ftexcoord);
+    vec4 light = texture(Light, ftexcoord)*10;
 
 	LPV_out[0] = pack(light.x * SHcoeffs, 8.0);
 	LPV_out[1] = pack(light.y * SHcoeffs, 8.0);

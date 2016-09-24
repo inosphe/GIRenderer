@@ -27,8 +27,10 @@ vec4 unpack(vec4 value, float size);
 void main(){
 	color0 = texture(Tex0, ftexcoord);
 
-    vec3 light = normalize(fposition.xyz - light_pos);
-    float l = max(dot(fnormal.xyz, -light) * light_intensity, 0.3);
+    float light_dist = abs(length(fposition.xyz - light_pos));
+    //vec3 light_dot = dot(fnormal.xyz, -normalize(fposition.xyz - light_pos));
+    float light_dot = dot(fnormal.xyz, -light_dir);
+    float l = max(light_dot * light_intensity, 0.3) / (light_dist) * 10;
     if(use_shadow == 1){
         vec4 shadow_screen_pos = ShadowViewProj * fposition;
         vec4 shadow_map_v = texture(ShadowMap, pack(shadow_screen_pos/shadow_screen_pos.w, 2.0).xy);
@@ -37,9 +39,12 @@ void main(){
         if(v0 < v1){
             l = 0.3;
         }
+        out_light = vec4(l);
+    }
+    else{
+        out_light = color0 * l;
     }
 
-    out_light = color0 * l;
 	normal = pack(fnormal, 2.0);
 	pos = pack(fposition, 4096.0);
 }
