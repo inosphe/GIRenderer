@@ -60,7 +60,7 @@ namespace Render{
 
 	void RenderPass::RenderBegin(int iFrameBuffer, bool bClear) {
 		UseFrameBuffer(iFrameBuffer);
-		RenderBegin(m_pCurFrameBuffer, bClear);
+		RenderBegin(m_pCurFrameBuffer.get(), bClear);
 	}
 
 	void RenderPass::RenderBegin(FrameBuffer *pFB, bool bClear) {
@@ -90,14 +90,14 @@ namespace Render{
 			glAttachShader(GetProgram(), GLUtil::LoadShader(type, szShader));
 	}
 
-	void RenderPass::SetFrameBuffer(FrameBuffer *pFrameBuffer, int at) {
+	void RenderPass::SetFrameBuffer(std::shared_ptr<FrameBuffer> pFrameBuffer, int at) {
 		for(int i=m_vecFrameBuffers.size(); i<=at; ++i){
 			m_vecFrameBuffers.push_back(nullptr);
 		}
 		m_vecFrameBuffers[at] = pFrameBuffer;
 	}
 
-	FrameBuffer *RenderPass::GetFrameBuffer(int at) {
+	std::shared_ptr<FrameBuffer> RenderPass::GetFrameBuffer(int at) {
 		if(at < m_vecFrameBuffers.size()){
 			return m_vecFrameBuffers[at];
 		}

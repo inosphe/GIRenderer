@@ -24,15 +24,15 @@ namespace Render{
 		virtual void RenderBegin(FrameBuffer* pFB, bool bClear);
 		virtual void RenderEnd();
 
-		void SetFrameBuffer(FrameBuffer* pFrameBuffer, int at);
-		FrameBuffer* GetFrameBuffer(int at);
-		inline FrameBuffer* GetCurFrameBuffer(){return m_pCurFrameBuffer;}
+		void SetFrameBuffer(std::shared_ptr<FrameBuffer> pFrameBuffer, int at);
+		std::shared_ptr<FrameBuffer> GetFrameBuffer(int at);
+		inline std::shared_ptr<FrameBuffer> GetCurFrameBuffer(){return m_pCurFrameBuffer;}
 		void UseFrameBuffer(int at);
 		inline uint32_t FrameBufferNum(){return m_vecFrameBuffers.size();}
 
 	private:
-		std::vector<FrameBuffer*> m_vecFrameBuffers;
-		FrameBuffer* m_pCurFrameBuffer = nullptr;
+		std::vector<std::shared_ptr<FrameBuffer>> m_vecFrameBuffers;
+		std::shared_ptr<FrameBuffer> m_pCurFrameBuffer = nullptr;
 	};
 }
 

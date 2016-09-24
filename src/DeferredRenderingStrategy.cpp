@@ -58,7 +58,7 @@ namespace Render{
 
 			FrameBuffer* pGPassFrameBuffer = new FrameBuffer(4);
 			pGPassFrameBuffer->Init();
-			pGPass->SetFrameBuffer(pGPassFrameBuffer, 0);
+			pGPass->SetFrameBuffer(std::shared_ptr<FrameBuffer>(pGPassFrameBuffer), 0);
 
 			AddRenderPass(pGPass, RENDER_PASS_ENUM::MAIN_GBUFFER);
 		}
@@ -84,7 +84,7 @@ namespace Render{
 			for(int i=0; i<1; ++i){
 				FrameBuffer* pGPassFrameBuffer = new FrameBuffer(4);
 				pGPassFrameBuffer->Init();
-				pGPass->SetFrameBuffer(pGPassFrameBuffer, i);
+				pGPass->SetFrameBuffer(std::shared_ptr<FrameBuffer>(pGPassFrameBuffer), i);
 			}
 			AddRenderPass(pGPass, RENDER_PASS_ENUM::LIGHT_GBUFFER);
 		}
@@ -98,7 +98,7 @@ namespace Render{
 			pRenderPass->Init(vecShaders);
 			FrameBuffer* pFB = new FrameBuffer(1, lpv_size, lpv_size*lpv_size);
 			pFB->Init();
-			pRenderPass->SetFrameBuffer(pFB, 0);
+			pRenderPass->SetFrameBuffer(std::shared_ptr<FrameBuffer>(pFB), 0);
 			AddRenderPass(pRenderPass, RENDER_PASS_ENUM::DOWNSAMPLE_GBUFFER);
 		}
 
@@ -120,7 +120,7 @@ namespace Render{
 			pLightPass0->BindInt(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, lpv_cellsize);
 			FrameBuffer* pFB = new FrameBuffer(1);
 			pFB->Init();
-			pLightPass0->SetFrameBuffer(pFB, 0);
+			pLightPass0->SetFrameBuffer(std::shared_ptr<FrameBuffer>(pFB), 0);
 			AddRenderPass(pLightPass0, RENDER_PASS_ENUM::TEST_LIGHTING);
 		}
 
@@ -150,7 +150,7 @@ namespace Render{
 			pFB->m_color[1] = 0.5f;
 			pFB->m_color[2] = 0.5f;
 			pFB->m_color[3] = 0.5f;
-			pPass->SetFrameBuffer(pFB, 0);
+			pPass->SetFrameBuffer(std::shared_ptr<FrameBuffer>(pFB), 0);
 			AddRenderPass(pPass, RENDER_PASS_ENUM::TEST_LIGHTING2);
 		}
 
@@ -173,13 +173,16 @@ namespace Render{
 			pLightInjectPass->BindProgram();
 			pLightInjectPass->BindInt(SHADER_UNIFORM_ENUM::LPV_SIZE, lpv_size);
 			pLightInjectPass->BindInt(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, lpv_cellsize);
-			FrameBuffer* pFB = new FrameBuffer(3, lpv_size, lpv_size*lpv_size);
-			pFB->Init();
-			pFB->m_color[0] = 0.5f;
-			pFB->m_color[1] = 0.5f;
-			pFB->m_color[2] = 0.5f;
-			pFB->m_color[3] = 0.5f;
-			pLightInjectPass->SetFrameBuffer(pFB, 0);
+
+			for(int i=0; i<2; ++i){
+				FrameBuffer* pFB = new FrameBuffer(3, lpv_size, lpv_size*lpv_size);
+				pFB->Init();
+				pFB->m_color[0] = 0.5f;
+				pFB->m_color[1] = 0.5f;
+				pFB->m_color[2] = 0.5f;
+				pFB->m_color[3] = 0.5f;
+				pLightInjectPass->SetFrameBuffer(std::shared_ptr<FrameBuffer>(pFB), i);
+			}
 			AddRenderPass(pLightInjectPass, RENDER_PASS_ENUM::LIGHT_INJECT);
 		}
 
@@ -202,9 +205,7 @@ namespace Render{
 			pPropagatePass->BindInt(SHADER_UNIFORM_ENUM::LPV_SIZE, lpv_size);
 			pPropagatePass->BindInt(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, lpv_cellsize);
 			for(int i=0; i<2; ++i){
-				FrameBuffer* pFB = new FrameBuffer(3, lpv_size, lpv_size*lpv_size);
-				pFB->Init();
-				pPropagatePass->SetFrameBuffer(pFB, i);
+				pPropagatePass->SetFrameBuffer(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(i), i);
 			}
 			AddRenderPass(pPropagatePass, RENDER_PASS_ENUM::LIGHT_PROPAGATE);
 		}
@@ -217,7 +218,7 @@ namespace Render{
 			pRenderPass->Init(vecLightInjectShaders);
 			FrameBuffer* pFB = new FrameBuffer(1, lpv_size, lpv_size*lpv_size);
 			pFB->Init();
-			pRenderPass->SetFrameBuffer(pFB, 0);
+			pRenderPass->SetFrameBuffer(std::shared_ptr<FrameBuffer>(pFB), 0);
 			AddRenderPass(pRenderPass, RENDER_PASS_ENUM::QUAD_TEST);
 		}
 
@@ -234,7 +235,7 @@ namespace Render{
 				FrameBuffer* pFB = new FrameBuffer(3, lpv_size, lpv_size*lpv_size);
 				pFB->SetClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 				pFB->Init();
-				pRenderPass->SetFrameBuffer(pFB, i);
+				pRenderPass->SetFrameBuffer(std::shared_ptr<FrameBuffer>(pFB), i);
 			}
 //			pRenderPass->SetFrameBuffer(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer());
 			AddRenderPass(pRenderPass, RENDER_PASS_ENUM::ACCUM_LPV);
@@ -249,11 +250,15 @@ namespace Render{
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/unpack_pos.glsl"));
 			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/sh_func.glsl"));
 			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, "Light", 0);
-			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 1);
-			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, "Normal", 2);
-			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, "LPV", 3);
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_DIFFUSE, "Diffuse", 1);
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_POS, "Pos", 2);
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, "Normal", 3);
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, "LPV", 4);
 			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_SIZE, "lpv_size");
 			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, "lpv_cellsize");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_POS, "light_pos");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_DIR, "light_dir");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, "light_intensity");
 			pRenderPass->Init(vecShaders);
 			pRenderPass->BindProgram();
 			pRenderPass->BindInt(SHADER_UNIFORM_ENUM::LPV_SIZE, lpv_size);
@@ -280,7 +285,7 @@ namespace Render{
 		}
 		const int iteration = 2;
 		LPVPropagate(iteration);
-		LPVFinal(m_pFrameBuffer);
+		LPVFinal(m_pFrameBuffer, vecLights);
 
 		//__QuadTest();
 		__CoordTest();
@@ -329,7 +334,7 @@ namespace Render{
 	}
 
 	void DeferredRenderingStrategy::LPVInject(Light* pLight, std::function<void()> fRenderModels) {
-		FrameBuffer* pLightGStageFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_GBUFFER)->GetFrameBuffer(0);
+		FrameBuffer* pLightGStageFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_GBUFFER)->GetFrameBuffer(0).get();
 
 		GLuint texGDiffuse = pLightGStageFB->m_uTextures[0];
 		GLuint texGNormal = pLightGStageFB->m_uTextures[1];
@@ -367,20 +372,30 @@ namespace Render{
 	}
 
 	void DeferredRenderingStrategy::LPVPropagate(int iteration) {
-		FrameBuffer* pLightInjectFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0);
+		FrameBuffer* pLightInjectFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0).get();
+		FrameBuffer* pLPVPropagateFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0).get();
 
+		/*
 		GLuint texLPVPropagate[] = {
 				pLightInjectFB->m_uTextures[0]
 				, pLightInjectFB->m_uTextures[1]
 				, pLightInjectFB->m_uTextures[2]
 		};
+		 */
+
+		GLuint texLPVPropagate[] = {
+				pLPVPropagateFB->m_uTextures[0]
+				, pLPVPropagateFB->m_uTextures[1]
+				, pLPVPropagateFB->m_uTextures[2]
+		};
 
 		//just for clear
-		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderBegin(true);
-		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderEnd();
+//		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderBegin(true);
+//		GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->RenderEnd();
 
-		for(int i=0; i<iteration; ++i){
-			RenderBegin(RENDER_PASS_ENUM::LIGHT_PROPAGATE, i%2, true);
+		GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->UseFrameBuffer(0);
+		for(int i=1; i<iteration; ++i){
+			RenderBegin(RENDER_PASS_ENUM::LIGHT_PROPAGATE, i%2, false);
 				SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, texLPVPropagate, 3);
 				m_quad.Render(SHADER);
 			RenderEnd();
@@ -389,15 +404,17 @@ namespace Render{
 				texLPVPropagate[j] = GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(i%2)->m_uTextures[j];
 			}
 
-			FrameBuffer* pLPVAcuumNextFB = GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer((i+1)%2);
+			/*
+			FrameBuffer* pLPVAcuumNextFB = GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer((i+1)%2).get();
 			RenderBegin(RENDER_PASS_ENUM::ACCUM_LPV, i%2, i==0);
-//				if(i==0)
-//					SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
-//				else
+				if(i==0)
+					SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
+				else
 					SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX0, pLPVAcuumNextFB->m_uTextures, 3);
 				SHADER.BindTextures(SHADER_UNIFORM_ENUM::TEX1, texLPVPropagate, 3);
 				m_quad.Render(SHADER);
 			RenderEnd();
+			*/
 		}
 	}
 
@@ -409,23 +426,32 @@ namespace Render{
 		RenderEnd();
 	}
 
-	void DeferredRenderingStrategy::LPVFinal(FrameBuffer* pFrameBuffer) {
-		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0);
+	void DeferredRenderingStrategy::LPVFinal(FrameBuffer* pFrameBuffer, const std::vector<GameObject::PTR>& vecLights) {
+		const unsigned long MAX_LIGHT_COUNT = 1;
+		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0).get();
 
 		RenderBegin(RENDER_PASS_ENUM::POST_LPV, pFrameBuffer, true);
+
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_LIGHT, pGStageFB->m_uTextures[3]);
+			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_DIFFUSE, pGStageFB->m_uTextures[0]);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_POS, pGStageFB->m_uTextures[2]);
 			SHADER.BindTexture(SHADER_UNIFORM_ENUM::GBUFFER_NORMAL, pGStageFB->m_uTextures[1]);
 //			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures, 3);
-//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetCurFrameBuffer()->m_uTextures, 3);
-			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
+			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetCurFrameBuffer()->m_uTextures, 3);
+//			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetFrameBuffer(0)->m_uTextures, 3);
+			for(int i=0; i<std::min(vecLights.size(), MAX_LIGHT_COUNT); ++i){
+				Light& light = *dynamic_cast<Light*>(vecLights[i].get());
+				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, light.GetPosition(), false);
+				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, light.Dir(), true);
+				SHADER.BindFloat(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, light.GetIntensity());
+			}
 			m_quad.Render(SHADER);
 		RenderEnd();
 	}
 
 	void DeferredRenderingStrategy::__CoordTest() {
 		GLuint tex_gradient[] = {tex_r->GetID(), tex_g->GetID(), tex_b->GetID()};
-		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0);
+		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0).get();
 
 
 		RenderBegin(RENDER_PASS_ENUM::TEST_LIGHTING, 0, true);
@@ -437,8 +463,8 @@ namespace Render{
 	}
 
 	void DeferredRenderingStrategy::RenderScreen() {
-		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0);
-		FrameBuffer* pLightGStageFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_GBUFFER)->GetFrameBuffer(0);
+		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0).get();
+		FrameBuffer* pLightGStageFB = GetRenderPass(RENDER_PASS_ENUM::LIGHT_GBUFFER)->GetFrameBuffer(0).get();
 
 		GLint viewport[4];
 		glGetIntegerv( GL_VIEWPORT, viewport );
@@ -453,10 +479,10 @@ namespace Render{
 		vecTextures.push_back(pGStageFB->m_uTextures[3]);
 //		vecTextures.push_back(pGStageFB->m_uDepthMap);
 		for(int i=0; i<3; ++i){
-			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
-//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0)->m_uTextures[i]);
+//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_INJECT)->GetCurFrameBuffer()->m_uTextures[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(0)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(0)->m_uTextures[i]);
-//			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(1)->m_uTextures[i]);
+			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetFrameBuffer(1)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetFrameBuffer(1)->m_uTextures[i]);
 //			vecTextures.push_back(GetRenderPass(RENDER_PASS_ENUM::ACCUM_LPV)->GetCurFrameBuffer()->m_uTextures[i]);
 		}

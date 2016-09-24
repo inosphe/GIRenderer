@@ -49,7 +49,7 @@ namespace Render{
 
 		void LPVInject(Light* pLight, std::function<void()> fRenderModels);
 		void LPVPropagate(int iteration);
-		void LPVFinal(FrameBuffer* pFrameBuffer);
+		void LPVFinal(FrameBuffer* pFrameBuffer, const std::vector<GameObject::PTR>& vecLights);
 
 		void RenderScreen();
 
