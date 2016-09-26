@@ -285,14 +285,14 @@ namespace Render{
 		}
 		const int iteration = 2;
 		LPVPropagate(iteration);
-		LPVFinal(m_pFrameBuffer, vecLights);
+		LPVFinal(m_bDebugMode?m_pFrameBuffer: nullptr, vecLights);
 
 		//__QuadTest();
 		__CoordTest();
 
 		glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
-		if(m_pFrameBuffer)
+		if(m_bDebugMode && m_pFrameBuffer)
 			RenderScreen();
 
 		std::vector<GLuint> vecTextures;
@@ -470,8 +470,7 @@ namespace Render{
 		glGetIntegerv( GL_VIEWPORT, viewport );
 
 		std::vector<GLuint> vecTextures;
-		if(m_pFrameBuffer)
-			vecTextures.push_back(m_pFrameBuffer->m_uTextures[0]);
+		vecTextures.push_back(m_pFrameBuffer->m_uTextures[0]);
 
 //		vecTextures.push_back(pGStageFB->m_uTextures[0]); //diffuse
 		vecTextures.push_back(pGStageFB->m_uTextures[1]); //normal

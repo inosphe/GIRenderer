@@ -41,6 +41,8 @@ namespace Render {
 		std::shared_ptr<Render::Camera> GetTargetCamera(){return m_pCamera;}
 		Render::Camera& GetTargetCameraRef(){return *m_pCamera.get();}
 		inline void SetLights(const std::vector<GameObject::PTR>& lights){m_vecLights = lights;}
+
+		inline void ToggleDebugMode(){m_pRenderingStrategy->SetDebugMode(!m_pRenderingStrategy->IsDebugMode());}
 	private:
 		IRenderingStrategy* m_pRenderingStrategy = nullptr;
 		std::shared_ptr<Render::Camera> m_pCamera = nullptr;

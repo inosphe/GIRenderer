@@ -147,6 +147,9 @@ namespace Core {
 			case GLFW_KEY_R:
 				this->m_pRenderer->Reload();
 				return true;
+			case GLFW_KEY_P:
+				this->m_pRenderer->ToggleDebugMode();
+				return true;
 			default:
 				return false;
 		}

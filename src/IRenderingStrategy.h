@@ -35,10 +35,14 @@ namespace Render{
 		inline RenderPass* GetRenderPass(int i){return m_vecRenderPass[i];}
 		inline RenderPass* GetCurrentRenderPass(){return GetRenderPass(m_nRenderPass);}
 
+		inline void SetDebugMode(bool bMode){m_bDebugMode = bMode;}
+		inline bool IsDebugMode(){return m_bDebugMode;}
+
 		virtual void Render(const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels)=0;
 	protected:
 		int m_nRenderPass = 0;
 		std::vector<RenderPass*> m_vecRenderPass;
+		bool m_bDebugMode = false;
 	};
 };
 
