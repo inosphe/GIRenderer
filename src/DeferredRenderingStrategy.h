@@ -29,6 +29,7 @@ namespace Render{
 			, LIGHT_PROPAGATE
 			, RENDER_TO_SCREEN
 			, POST_LPV
+			, FINAL
 			, QUAD_TEST
 			, ACCUM_LPV
 			, DOWNSAMPLE_GBUFFER
@@ -50,6 +51,8 @@ namespace Render{
 		void LPVInject(Light* pLight, std::function<void()> fRenderModels);
 		void LPVPropagate(int iteration);
 		void LPVFinal(FrameBuffer* pFrameBuffer, const std::vector<GameObject::PTR>& vecLights);
+
+		void RenderFinal(FrameBuffer* pFrameBuffer, const Camera& camera, const std::vector<GameObject::PTR>& vecLights, std::function<void()> fRenderModels);
 
 		void RenderScreen();
 

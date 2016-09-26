@@ -266,6 +266,41 @@ namespace Render{
 			AddRenderPass(pRenderPass, RENDER_PASS_ENUM::POST_LPV);
 		}
 
+		{
+			RenderPass* pRenderPass= new RenderPass();
+			std::vector<std::pair<GLuint, std::string>> vecShaders;
+			vecShaders.push_back(std::make_pair(GL_VERTEX_SHADER, "shader/deferred.vert.glsl"));
+			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/final.frag.glsl"));
+			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/volume_coord.glsl"));
+			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/unpack_pos.glsl"));
+			vecShaders.push_back(std::make_pair(GL_FRAGMENT_SHADER, "shader/sh_func.glsl"));
+
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0", 0);
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::SHADOW_MAP, "ShadowMap", 1);
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, "LPV", 2);
+
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_SIZE, "lpv_size");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, "lpv_cellsize");
+
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::CAMERA_POS, "CameraPos");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LOOK, "Look");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::VIEWPROJ, "ViewProjection");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TRANSFORM, "ObjectTransform");
+
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_POS, "light_pos");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_DIR, "light_dir");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, "light_intensity");
+
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::SHADOW_VIEWPROJ, "ShadowViewProj");
+			pRenderPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::USE_SHADOW, "use_shadow");
+
+			pRenderPass->Init(vecShaders);
+			pRenderPass->BindProgram();
+			pRenderPass->BindInt(SHADER_UNIFORM_ENUM::LPV_SIZE, lpv_size);
+			pRenderPass->BindInt(SHADER_UNIFORM_ENUM::LPV_CELL_SIZE, lpv_cellsize);
+			AddRenderPass(pRenderPass, RENDER_PASS_ENUM::FINAL);
+		}
+
 		RenderPass* pScreenPass = new RenderPass();
 		pScreenPass->AddShaderUnfiorm(SHADER_UNIFORM_ENUM::TEX0, "Tex0");
 		pScreenPass->Init("shader/quad.vert.glsl", nullptr, "shader/quad.frag.glsl");
@@ -285,7 +320,8 @@ namespace Render{
 		}
 		const int iteration = 2;
 		LPVPropagate(iteration);
-		LPVFinal(m_bDebugMode?m_pFrameBuffer: nullptr, vecLights);
+//		LPVFinal(m_bDebugMode?m_pFrameBuffer: nullptr, vecLights);
+		RenderFinal(m_bDebugMode?m_pFrameBuffer: nullptr, camera, vecLights, fRenderModels);
 
 		//__QuadTest();
 		__CoordTest();
@@ -517,6 +553,31 @@ namespace Render{
 				SHADER.BindViewProj(SHADER_UNIFORM_ENUM::SHADOW_VIEWPROJ, light);
 				SHADER.BindInt(SHADER_UNIFORM_ENUM::USE_SHADOW, 1);
 				SHADER.BindTexture(SHADER_UNIFORM_ENUM::SHADOW_MAP, GetRenderPass(LIGHT_GBUFFER)->GetFrameBuffer(0)->m_uDepthMap);
+			}
+			fRenderModels();
+		RenderEnd();
+	}
+
+	void DeferredRenderingStrategy::RenderFinal(FrameBuffer *pFrameBuffer, const Camera& camera,
+	                                            const std::vector<GameObject::PTR> &vecLights, std::function<void()> fRenderModels) {
+		const unsigned long MAX_LIGHT_COUNT = 1;
+		FrameBuffer* pGStageFB = GetRenderPass(RENDER_PASS_ENUM::MAIN_GBUFFER)->GetFrameBuffer(0).get();
+
+		RenderBegin(RENDER_PASS_ENUM::FINAL, pFrameBuffer, true);
+			//SHADER.BindTexture(SHADER_UNIFORM_ENUM::TEX0, 0);
+			SHADER.BindTextures(SHADER_UNIFORM_ENUM::LIGHT_VOLUME, GetRenderPass(RENDER_PASS_ENUM::LIGHT_PROPAGATE)->GetCurFrameBuffer()->m_uTextures, 3);
+			SHADER.BindViewProj(SHADER_UNIFORM_ENUM::VIEWPROJ, camera);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LOOK, camera.Dir(), true);
+			SHADER.BindVec3f(SHADER_UNIFORM_ENUM::CAMERA_POS, camera.GetPosition(), false);
+
+			for(int i=0; i<std::min(vecLights.size(), MAX_LIGHT_COUNT); ++i){
+				SHADER.BindInt(SHADER_UNIFORM_ENUM::USE_SHADOW, 1);
+				Light& light = *dynamic_cast<Light*>(vecLights[i].get());
+				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_POS, light.GetPosition(), false);
+				SHADER.BindVec3f(SHADER_UNIFORM_ENUM::LIGHT_DIR, light.Dir(), true);
+				SHADER.BindFloat(SHADER_UNIFORM_ENUM::LIGHT_INTENSITY, light.GetIntensity());
+				SHADER.BindViewProj(SHADER_UNIFORM_ENUM::SHADOW_VIEWPROJ, light);
+				SHADER.BindTexture(SHADER_UNIFORM_ENUM::SHADOW_MAP, GetRenderPass(LIGHT_GBUFFER)->GetFrameBuffer(i)->m_uDepthMap);
 			}
 			fRenderModels();
 		RenderEnd();

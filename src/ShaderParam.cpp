@@ -76,6 +76,7 @@ namespace Render{
 			const std::string& str = i.second.varName;
 			GLint loc = glGetUniformLocation(m_uProgram, str.c_str());
 			i.second.loc = loc;
+			GLUtil::CheckError();
 		}
 	}
 

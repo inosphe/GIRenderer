@@ -32,7 +32,7 @@ void TestScene3::Init() {
 	auto light = new Light();
 	light->SetPosition(glm::vec3(-202, 1123, -54.2));
 	light->SetDirection(glm::vec3(-0.5, -1, 0));
-	light->SetIntensity(100.0f);
+	light->SetIntensity(1000.0f);
 	AddGameObject(std::shared_ptr<GameObject>(light));
 }
 
@@ -43,7 +43,7 @@ TestScene3::~TestScene3() {
 TestScene3::TestScene3(Core::Application &app)
 :IScene(app)
 , tween(glm::vec3(-202, 1123, -300), glm::vec3(-202, 1123, 300), 10.0f)
-, tween_intensity(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, 0.0f), 5.0f)
+, tween_intensity(glm::vec3(500.0f, 0.0f, 0.0f), glm::vec3(1500.0f, 0.0f, 0.0f), 5.0f)
 {
 
 }

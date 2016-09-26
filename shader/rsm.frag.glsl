@@ -30,7 +30,7 @@ void main(){
     float light_dist = abs(length(fposition.xyz - light_pos));
     //vec3 light_dot = dot(fnormal.xyz, -normalize(fposition.xyz - light_pos));
     float light_dot = dot(fnormal.xyz, -light_dir);
-    float l = max(light_dot * light_intensity, 0.3) / (light_dist) * 10;
+    float l = max(light_dot * light_intensity / light_dist, 0.3);
     if(use_shadow == 1){
         vec4 shadow_screen_pos = ShadowViewProj * fposition;
         vec4 shadow_map_v = texture(ShadowMap, pack(shadow_screen_pos/shadow_screen_pos.w, 2.0).xy);
