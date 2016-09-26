@@ -30,9 +30,9 @@ void Resource::FBX::FBXMaterial::InitMaterial(const FbxSurfaceMaterial *pFbxMate
 	Render::MaterialElement& material = AddElement();
 
 	const FbxImplementation *lImplementation = pFbxMaterial->GetDefaultImplementation();
-		FbxPropertyT<FbxDouble3> lKFbxDouble3;
-		FbxPropertyT<FbxDouble> lKFbxDouble1;
-		FbxColor theColor;
+	FbxPropertyT<FbxDouble3> lKFbxDouble3;
+	FbxPropertyT<FbxDouble> lKFbxDouble1;
+	FbxColor theColor;
 
 	if(lImplementation){
 		const FbxBindingTable *lTable = lImplementation->GetRootTable();
@@ -86,9 +86,20 @@ void Resource::FBX::FBXMaterial::InitMaterial(const FbxSurfaceMaterial *pFbxMate
 
 		// Display the Shininess
 		lKFbxDouble1 =((FbxSurfacePhong *) pFbxMaterial)->Shininess;
+		double dShininess = lKFbxDouble1.Get();
+
+		lKFbxDouble1 =((FbxSurfacePhong *) pFbxMaterial)->Specular;
+		double dSpecular = lKFbxDouble1.Get();
+
+		lKFbxDouble1 =((FbxSurfacePhong *) pFbxMaterial)->SpecularFactor;
+		double dSpecularFactor = lKFbxDouble1.Get();
+
+		material.m_fShininess = dShininess;
+		material.m_fSpecular = dSpecular * dSpecularFactor;
 
 		// Display the Reflectivity
 		lKFbxDouble1 =((FbxSurfacePhong *) pFbxMaterial)->ReflectionFactor;
+		material.m_fReflectionFactor = lKFbxDouble1.Get();
 	}
 	else if(pFbxMaterial->GetClassId().Is(FbxSurfaceLambert::ClassId) )
 	{

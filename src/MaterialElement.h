@@ -23,6 +23,11 @@ namespace Render{
 			void Bind(Render::ShaderParam& shader) const;
 			void Clear();
 
+		public:
+			float m_fShininess = 0.0;
+			float m_fSpecular = 0.0;
+			float m_fReflectionFactor = 0.0;
+
 		protected:
 			std::vector<Render::Texture*> m_vecTexture;
 	};
